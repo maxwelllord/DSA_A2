@@ -16,17 +16,23 @@ import java.util.List;
  */
 public class Application {
     
-    private List<Product> products = new ArrayList<>();    
+    List<Product> products = new ArrayList<>();    
     private List<Customer> customers = new ArrayList<>();    
     private List<Order> orders = new ArrayList<>();
     
     Database db;
-
-    /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String[] args) {
-        // TODO code application logic here
+        
+        Database db = new Database();
+        
+        Application app = new Application(db);        
+        app.resultSetToProducts(db.getProducts());
+        
+        System.out.println(app.products);
+        
+        GUI gui = new GUI(app);
+        gui.setVisible(true);
     }
 
     public Application(Database db) {
@@ -37,8 +43,6 @@ public class Application {
     
     //unpack the result of a query into a Product object
     public void resultSetToProducts(ResultSet rs) {
-        
-        
         try {
         
             while (rs.next()) {
