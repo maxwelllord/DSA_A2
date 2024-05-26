@@ -16,13 +16,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author hayae
  */
 public class GUI extends JFrame {
+    
+    public ProductTableModel productTable;
     
     String[] columnNames = {"Product", "Quantity", "Price"};
     Object[][] data = {};
@@ -37,7 +38,7 @@ public class GUI extends JFrame {
         JButton button = new JButton("Click Me");
         JTextField textField = new JTextField(20);
         
-        ProductTableModel productTable = new ProductTableModel(app.products);
+        productTable = new ProductTableModel(app.products);
         JTable table = new JTable(productTable);
 
         // Create a scroll pane and add the table to it
@@ -61,12 +62,17 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
     }
     
-    private class ProductTableModel extends AbstractTableModel {
+    public class ProductTableModel extends AbstractTableModel {
         private final String[] columnNames = {"Item", "Quantity", "Price"};
         private List<Product> products;
 
         public ProductTableModel(List<Product> products) {
             this.products = products;
+        }
+        
+        public void updateTable(List<Product> products) {
+            this.products = products;        
+            fireTableDataChanged();
         }
 
         @Override

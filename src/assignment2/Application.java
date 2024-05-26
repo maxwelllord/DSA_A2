@@ -21,18 +21,21 @@ public class Application {
     private List<Order> orders = new ArrayList<>();
     
     Database db;
+    GUI gui;
     
     public static void main(String[] args) {
         
         Database db = new Database();
         
         Application app = new Application(db);        
-        app.resultSetToProducts(db.getProducts());
-        
-        System.out.println(app.products);
-        
+        app.resultSetToProducts(db.getProducts());    
         GUI gui = new GUI(app);
+        app.gui = gui;
         gui.setVisible(true);
+        
+        //Product p = new Product(-1, "PRODUCT NAME1", "test product please ignore", "testp", new BigDecimal(12.4), 100);
+        
+        //app.createProduct(p);
     }
 
     public Application(Database db) {
@@ -61,6 +64,18 @@ public class Application {
             e.printStackTrace();
         }
         
+    }
+    
+    public void createProduct(Product newProduct) {
+        //title desc cat price quant
+        String query = "INSERT INTO PRODUCTS (NAME, DESCRIPTION, CATEGORY, PRICE, QUANTITY)\n" +
+            "VALUES ('" + newProduct.getTitle() + "', '" + newProduct.getDescription() + "', '" +
+            newProduct.getCategory() + "', " + newProduct.getPrice() + ", " +
+            newProduct.getQuantity() + ")";
+        this.db.executeUpdate(query);
+        
+        products.add(newProduct);
+        this.gui.productTable.updateTable(products);
     }
     
     public void printProducts() {
