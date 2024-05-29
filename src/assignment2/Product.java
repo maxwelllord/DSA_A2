@@ -25,6 +25,8 @@ public class Product {
     private Timestamp updatedAt;
 
     public Product(int id, String title, String description, String category, BigDecimal price, int quantity) {
+    
+        this.id = id;
         this.title = title;
         this.description = description;
         this.category = category;
