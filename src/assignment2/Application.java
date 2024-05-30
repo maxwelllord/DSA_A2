@@ -7,6 +7,7 @@ package assignment2;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,21 +50,30 @@ public class Application {
         try {
         
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String desc = rs.getString("description");
-                String cat = rs.getString("category");
-                
-                BigDecimal price = rs.getBigDecimal("price");
-                int quant = rs.getInt("quantity");
-                
-                Product newProduct = new Product(id, name, desc, cat, price, quant);
-                products.add(newProduct);                
+                products.add(rsToProduct(rs));                
             }            
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }        
+    }
+    
+    public Product rsToProduct(ResultSet rs) {
         
+        try {
+            int id = rs.getInt("id");
+            String name = rs.getString("name");
+            String desc = rs.getString("description");
+            String cat = rs.getString("category");
+
+            BigDecimal price = rs.getBigDecimal("price");
+            int quant = rs.getInt("quantity");
+
+            return new Product(id, name, desc, cat, price, quant);     
+        }catch (Exception e) {
+            e.printStackTrace();
+        }   
+        
+        return null;
     }
     
     public void createProduct(Product newProduct) {
@@ -76,6 +86,21 @@ public class Application {
         
         products.add(newProduct);
         this.gui.productTable.updateTable(products);
+    }
+    
+    public Product getProductById(int id) {
+        ResultSet rs = this.db.getProductById(id);
+        System.out.println(rs);
+        
+        try {            
+            while (rs.next()) {                
+                return rsToProduct(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }     
+        
+        return null;
     }
     
     public void printProducts() {

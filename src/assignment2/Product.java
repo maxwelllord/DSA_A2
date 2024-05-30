@@ -38,6 +38,10 @@ public class Product {
         return title;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

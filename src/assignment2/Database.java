@@ -62,7 +62,22 @@ public class Database {
             e.printStackTrace();
         }
         return -1;
-    } 
+    }
+    
+    public ResultSet getProductById(int id) {
+        
+         try {
+            String query = "SELECT * FROM products WHERE id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet;
+             
+         } catch (Exception e) {
+             e.printStackTrace();
+             return null;
+         }
+    }
 
     // Example methods for querying specific tables
     public ResultSet getCustomers() {

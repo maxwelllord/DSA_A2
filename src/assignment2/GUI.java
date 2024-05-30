@@ -9,6 +9,9 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import static java.lang.String.format;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -30,6 +33,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.text.NumberFormatter;
 
 /**
  *
@@ -38,6 +42,7 @@ import javax.swing.table.AbstractTableModel;
 public class GUI extends JFrame {
     
     public ProductTableModel productTable;
+    public ProductPanel productPanel;
     
     String[] columnNames = {"Product", "Quantity", "Price"};
     Object[][] data = {};
@@ -50,10 +55,12 @@ public class GUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(400, 300));
         
-        productTable = new ProductTableModel(app.products);
-        JTable table = new JTable(productTable);
+        productTable = new ProductTableModel(app.products, this);
+        JTable table = new JTable(productTable);        
+        productTable.addTableMouseListener(table);
         
-        ProductPanel productCreatorEditor = new ProductPanel();
+        ProductPanel pP = new ProductPanel(this);
+        this.productPanel = pP;
 
         // Create a scroll pane and add the table to it
         JScrollPane scrollPane = new JScrollPane(table);
@@ -65,7 +72,7 @@ public class GUI extends JFrame {
         // Create a panel and add components
         JPanel panel = new JPanel();
         panel.add(tablePanel);
-        panel.add(productCreatorEditor);
+        panel.add(pP);
 
         // Add the panel to the frame
         add(panel);
@@ -80,9 +87,11 @@ public class GUI extends JFrame {
     public class ProductTableModel extends AbstractTableModel {
         private final String[] columnNames = {"Item", "Quantity", "Price"};
         private List<Product> products;
+        private GUI gui;
 
-        public ProductTableModel(List<Product> products) {
+        public ProductTableModel(List<Product> products, GUI gui) {
             this.products = products;
+            this.gui = gui;
         }
         
         public void updateTable(List<Product> products) {
@@ -119,17 +128,48 @@ public class GUI extends JFrame {
                     return null;
             }
         }
+
+        public Product getProductAt(int rowIndex) {
+            return products.get(rowIndex);
+        }
+
+        public void addTableMouseListener(final JTable table) {
+            table.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 1) { // Single click, probably not needed
+                    
+                    } else if (e.getClickCount() == 2) { // Double click
+                        int rowIndex = table.rowAtPoint(e.getPoint());
+                        if (rowIndex >= 0) {
+                            // Handle double click event on the row
+                            
+                            // Perform desired action with the double-clicked product
+                            System.out.println("Attempting to load product Id:" + products.get(rowIndex).getId());
+                            gui.productPanel.loadProduct(products.get(rowIndex).getId());
+                            
+                            
+                        }
+                    }
+                }
+            });
+        }
     }
     
     public class ProductPanel extends JPanel {
         private JTextField titleField;
         private JTextArea descriptionArea;
-        private JComboBox<String> categoryComboBox;
+        private JTextField categoryComboBox;
         private JFormattedTextField priceField;
         private JSpinner quantitySpinner;
         private JButton createButton;
+        
+        private GUI gui;        
+        private boolean isEditing = false;
 
-        public ProductPanel() {
+        public ProductPanel(GUI gui) {
+            this.gui = gui;
+            
             setLayout(new GridBagLayout());
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.insets = new Insets(5, 5, 5, 5);
@@ -163,9 +203,8 @@ public class GUI extends JFrame {
             constraints.gridx = 0;
             constraints.gridy = 2;
             add(categoryLabel, constraints);
-
-            String[] categories = {"Electronics", "Books", "Clothing", "Home"};
-            categoryComboBox = new JComboBox<>(categories);
+            
+            categoryComboBox = new JTextField(20);
             constraints.gridx = 1;
             constraints.gridy = 2;
             add(categoryComboBox, constraints);
@@ -179,8 +218,12 @@ public class GUI extends JFrame {
             NumberFormat numberFormat = NumberFormat.getNumberInstance();
             numberFormat.setMaximumFractionDigits(2);
             numberFormat.setMinimumFractionDigits(2);
+
+            NumberFormatter formatter = new NumberFormatter(numberFormat);
+            formatter.setValueClass(BigDecimal.class);
+            formatter.setAllowsInvalid(false);
             
-            JFormattedTextField priceField = new JFormattedTextField(numberFormat);
+            JFormattedTextField priceField = new JFormattedTextField(formatter);
             priceField.setFocusLostBehavior(JFormattedTextField.COMMIT);
             
             priceField.setInputVerifier(new InputVerifier() {
@@ -189,21 +232,26 @@ public class GUI extends JFrame {
                     JFormattedTextField field = (JFormattedTextField) input;
                     String text = field.getText();
                     System.out.println(text);
-                    
-                    //strip text of non-numerics
+
+                    // Strip text of non-numerics
                     text = text.replaceAll("[^\\d.]", "");
-                    if (text.equals("")) {    
-                        field.setValue(0);
+
+                    if (text.isEmpty()) {
+                        field.setValue(BigDecimal.ZERO);
                         return false;
                     }
-                    
-                    double price = Double.parseDouble(text);
-                    if (price >= 0) {
-                        field.setValue(price);
-                        return true; // Valid price
+
+                    try {
+                        BigDecimal price = new BigDecimal(text);
+                        if (price.compareTo(BigDecimal.ZERO) >= 0) {
+                            field.setValue(price);
+                            return true; // Valid price
+                        }
+                    } catch (NumberFormatException e) {
+                        // Handle invalid input
                     }
-                    
-                    field.setValue(0);
+
+                    field.setValue(BigDecimal.ZERO);
                     return false;
                 }
             });
@@ -234,6 +282,8 @@ public class GUI extends JFrame {
             constraints.gridx = 1;
             constraints.gridy = 5;
             add(createButton, constraints);
+            
+            this.priceField = priceField;
         }
         
         public Product createProduct() {
@@ -244,6 +294,19 @@ public class GUI extends JFrame {
             int quant = getQuantity();
             
             return new Product(-1, title, desc, cat, price, quant);
+        }
+        
+        //load product for editing
+        public void loadProduct(int productId) {
+            Product p = gui.app.getProductById(productId);
+            
+            System.out.println(p.getPrice());
+            
+            titleField.setText(p.getTitle());
+            descriptionArea.setText(p.getDescription());
+            categoryComboBox.setText(p.getCategory());
+            priceField.setValue(p.getPrice());
+            quantitySpinner.setValue(p.getQuantity());
         }
 
         // Getter methods for retrieving the entered data
@@ -256,7 +319,7 @@ public class GUI extends JFrame {
         }
 
         public String getCategory() {
-            return (String) categoryComboBox.getSelectedItem();
+            return (String) categoryComboBox.getText();
         }
 
         public BigDecimal getPrice() {
