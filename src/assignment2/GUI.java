@@ -163,6 +163,7 @@ public class GUI extends JFrame {
         private JFormattedTextField priceField;
         private JSpinner quantitySpinner;
         private JButton createButton;
+        private JButton discardButton;
         
         private GUI gui;        
         private boolean isEditing = false;
@@ -276,12 +277,24 @@ public class GUI extends JFrame {
             //Create button
             createButton = new JButton("Create");
             createButton.addActionListener(e -> {
-                app.createProduct(createProduct());
-                
+                app.createProduct(createProduct());                
             });
-            constraints.gridx = 1;
+            
+            //Create button
+            discardButton = new JButton("Discard");
+            discardButton.addActionListener(e -> {
+                resetFields();
+            });
+            
+            
+            constraints.gridx = 0;
             constraints.gridy = 5;
             add(createButton, constraints);
+            
+            
+            constraints.gridx = 1;
+            constraints.gridy = 5;
+            add(discardButton, constraints);
             
             this.priceField = priceField;
         }
@@ -307,6 +320,15 @@ public class GUI extends JFrame {
             categoryComboBox.setText(p.getCategory());
             priceField.setValue(p.getPrice());
             quantitySpinner.setValue(p.getQuantity());
+        }
+        
+        public void resetFields() {            
+            titleField.setText("");
+            descriptionArea.setText("");
+            categoryComboBox.setText("");
+            priceField.setValue(BigDecimal.ZERO);
+            quantitySpinner.setValue(0);
+            
         }
 
         // Getter methods for retrieving the entered data
