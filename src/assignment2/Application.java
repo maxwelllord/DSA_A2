@@ -34,10 +34,6 @@ public class Application {
         MainWindow gui = new MainWindow(app);
         app.gui = gui;
         gui.setVisible(true);
-        
-        //Product p = new Product(-1, "PRODUCT NAME1", "test product please ignore", "testp", new BigDecimal(12.4), 100);
-        
-        //app.createProduct(p);
     }
 
     public Application(Database db) {

@@ -5,9 +5,13 @@
 package assignment2.GUI;
 
 import assignment2.Product;
+import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
@@ -17,82 +21,110 @@ import javax.swing.table.AbstractTableModel;
  */
 
 public class ProductTableModel extends AbstractTableModel {
-        private final String[] columnNames = {"Item", "Quantity", "Price"};
-        private List<Product> products;
-        private MainWindow gui;
+    private final String[] columnNames = {"Item", "Quantity", "Price"};
+    private List<Product> products;
+    private MainWindow gui;
 
-        public ProductTableModel(List<Product> products, MainWindow gui) {
-            this.products = products;
-            this.gui = gui;
-        }
-        
-        public void updateTable(List<Product> products) {
-            this.products = products;        
-            fireTableDataChanged();
-        }
+    private JButton createNewProductButton;
+    private JPanel tablePanel;
 
-        @Override
-        public int getRowCount() {
-            return products.size();
-        }
+    public ProductTableModel(List<Product> products, MainWindow gui) {
+        this.products = products;
+        this.gui = gui;
 
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
-        }
+        this.createNewProductButton = new JButton("Create Product");     
+        this.createNewProductButton.addActionListener(e -> {
+                navigateToProductEditor();             
+        });
 
-        @Override
-        public String getColumnName(int column) {
-            return columnNames[column];
-        }
+        JTable table = new JTable(this);        
+        this.addTableMouseListener(table);
 
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Product product = products.get(rowIndex);
-            switch (columnIndex) {
-                case 0:
-                    return product.getTitle();
-                case 1:
-                    return product.getQuantity();
-                case 2:
-                    return product.getPrice();
-                default:
-                    return null;
-            }
-        }
+        // Create a scroll pane and add the table to it
+        JScrollPane scrollPane = new JScrollPane(table);
 
-        public Product getProductAt(int rowIndex) {
-            return products.get(rowIndex);
-        }
+        // Create a panel for the table and add the scroll pane to it
+        this.tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+        tablePanel.add(createNewProductButton, BorderLayout.SOUTH);
+    }
 
-        public void addTableMouseListener(final JTable table) {
-            table.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    
-                    int rowIndex = table.rowAtPoint(e.getPoint());
-                    
-                    if (e.getClickCount() == 1) { // Single click
-                        
-                        gui.hideAllPanels();
-                        gui.productDisplayPanel.setProductInfo(products.get(rowIndex));
-                        gui.productDisplayPanel.setVisible(true);
-                    
-                    } else if (e.getClickCount() == 2) { // Double click
-                        if (rowIndex >= 0) {
-                            // Handle double click event on the row
-                            
-                            // Perform desired action with the double-clicked product
-                            System.out.println("Attempting to load product Id:" + products.get(rowIndex).getId());
-                            gui.productEditorPanel.loadProduct(products.get(rowIndex).getId());
-                            
-                            gui.hideAllPanels();
-                            gui.productEditorPanel.setVisible(true);
-                            
-                            
-                        }
-                    }
-                }
-            });
+    public JPanel getTablePanel() {
+        return tablePanel;
+    }
+
+    public void updateTable(List<Product> products) {
+        this.products = products;        
+        fireTableDataChanged();
+    }
+
+    @Override
+    public int getRowCount() {
+        return products.size();
+    }
+
+    @Override
+    public int getColumnCount() {
+        return columnNames.length;
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return columnNames[column];
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Product product = products.get(rowIndex);
+        switch (columnIndex) {
+            case 0:
+                return product.getTitle();
+            case 1:
+                return product.getQuantity();
+            case 2:
+                return product.getPrice();
+            default:
+                return null;
         }
     }
+
+    public Product getProductAt(int rowIndex) {
+        return products.get(rowIndex);
+    }
+    
+    public void navigateToProductEditor() {
+        gui.hideAllPanels();
+        gui.productEditorPanel.setVisible(true);
+    }
+
+    public void addTableMouseListener(final JTable table) {
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                int rowIndex = table.rowAtPoint(e.getPoint());
+
+                if (e.getClickCount() == 1) { // Single click
+
+                    gui.hideAllPanels();
+                    gui.productDisplayPanel.setProductInfo(products.get(rowIndex));
+                    gui.productDisplayPanel.setVisible(true);
+
+                } else if (e.getClickCount() == 2) { // Double click
+                    if (rowIndex >= 0) {
+                        // Handle double click event on the row
+
+                        // Perform desired action with the double-clicked product
+                        System.out.println("Attempting to load product Id:" + products.get(rowIndex).getId());
+                        gui.productEditorPanel.loadProduct(products.get(rowIndex).getId());
+
+                        gui.hideAllPanels();
+                        gui.productEditorPanel.setVisible(true);
+
+
+                    }
+                }
+            }
+        });
+    }
+}

@@ -5,12 +5,9 @@
 package assignment2.GUI;
 
 import assignment2.Application;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 /**
@@ -21,6 +18,7 @@ public class MainWindow extends JFrame {
     
     //main views of the GUI
     public ProductTableModel productTable;
+    public JPanel tableContainer;
     public JPanel tablePanel;
     public ProductEditorPanel productEditorPanel;
     ProductDisplayPanel productDisplayPanel;
@@ -36,9 +34,8 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(400, 300));
         
-        productTable = new ProductTableModel(app.products, this);
-        JTable table = new JTable(productTable);        
-        productTable.addTableMouseListener(table);
+        this.productTable = new ProductTableModel(app.products, this);
+        this.tablePanel = productTable.getTablePanel();
         
         this.productDisplayPanel = new ProductDisplayPanel(this);
         this.productDisplayPanel.setVisible(false);
@@ -46,13 +43,6 @@ public class MainWindow extends JFrame {
         ProductEditorPanel pP = new ProductEditorPanel(this);
         this.productEditorPanel = pP;
         this.productEditorPanel.setVisible(false);
-
-        // Create a scroll pane and add the table to it
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        // Create a panel for the table and add the scroll pane to it
-        this.tablePanel = new JPanel(new BorderLayout());
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
 
         // Create a panel and add components
         JPanel panel = new JPanel();
