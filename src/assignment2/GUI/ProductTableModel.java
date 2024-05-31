@@ -69,19 +69,25 @@ public class ProductTableModel extends AbstractTableModel {
             table.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 1) { // Single click, probably not needed
+                    
+                    int rowIndex = table.rowAtPoint(e.getPoint());
+                    
+                    if (e.getClickCount() == 1) { // Single click
+                        
+                        gui.hideAllPanels();
+                        gui.productDisplayPanel.setProductInfo(products.get(rowIndex));
+                        gui.productDisplayPanel.setVisible(true);
                     
                     } else if (e.getClickCount() == 2) { // Double click
-                        int rowIndex = table.rowAtPoint(e.getPoint());
                         if (rowIndex >= 0) {
                             // Handle double click event on the row
                             
                             // Perform desired action with the double-clicked product
                             System.out.println("Attempting to load product Id:" + products.get(rowIndex).getId());
-                            gui.productPanel.loadProduct(products.get(rowIndex).getId());
+                            gui.productEditorPanel.loadProduct(products.get(rowIndex).getId());
                             
                             gui.hideAllPanels();
-                            gui.productPanel.setVisible(true);
+                            gui.productEditorPanel.setVisible(true);
                             
                             
                         }

@@ -22,7 +22,8 @@ public class MainWindow extends JFrame {
     //main views of the GUI
     public ProductTableModel productTable;
     public JPanel tablePanel;
-    public ProductPanel productPanel;
+    public ProductEditorPanel productEditorPanel;
+    ProductDisplayPanel productDisplayPanel;
     
     String[] columnNames = {"Product", "Quantity", "Price"};
     Object[][] data = {};
@@ -39,9 +40,12 @@ public class MainWindow extends JFrame {
         JTable table = new JTable(productTable);        
         productTable.addTableMouseListener(table);
         
-        ProductPanel pP = new ProductPanel(this);
-        this.productPanel = pP;
-        this.productPanel.setVisible(false);
+        this.productDisplayPanel = new ProductDisplayPanel(this);
+        this.productDisplayPanel.setVisible(false);
+        
+        ProductEditorPanel pP = new ProductEditorPanel(this);
+        this.productEditorPanel = pP;
+        this.productEditorPanel.setVisible(false);
 
         // Create a scroll pane and add the table to it
         JScrollPane scrollPane = new JScrollPane(table);
@@ -53,7 +57,8 @@ public class MainWindow extends JFrame {
         // Create a panel and add components
         JPanel panel = new JPanel();
         panel.add(tablePanel);
-        panel.add(productPanel);
+        panel.add(productEditorPanel);
+        panel.add(productDisplayPanel);
 
         // Add the panel to the frame
         add(panel);
@@ -76,7 +81,8 @@ public class MainWindow extends JFrame {
     public void hideAllPanels() {
         System.out.println("hiding all panels");
         this.tablePanel.setVisible(false);
-        this.productPanel.setVisible(false);
+        this.productEditorPanel.setVisible(false);
+        this.productDisplayPanel.setVisible(false);
     }
     
 }

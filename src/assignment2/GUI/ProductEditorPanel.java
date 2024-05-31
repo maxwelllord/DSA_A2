@@ -29,7 +29,7 @@ import javax.swing.text.NumberFormatter;
  */
 
     
-    public class ProductPanel extends JPanel {
+    public class ProductEditorPanel extends JPanel {
         private JTextField titleField;
         private JTextArea descriptionArea;
         private JTextField categoryComboBox;
@@ -41,7 +41,7 @@ import javax.swing.text.NumberFormatter;
         private MainWindow gui;        
         private boolean isEditing = false;
 
-        public ProductPanel(MainWindow gui) {
+        public ProductEditorPanel(MainWindow gui) {
             this.gui = gui;
             
             setLayout(new GridBagLayout());
@@ -190,8 +190,6 @@ import javax.swing.text.NumberFormatter;
         //load product for editing
         public void loadProduct(int productId) {
             Product p = gui.app.getProductById(productId);
-            
-            System.out.println(p.getPrice());
             
             titleField.setText(p.getTitle());
             descriptionArea.setText(p.getDescription());

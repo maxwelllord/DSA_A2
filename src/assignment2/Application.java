@@ -8,7 +8,7 @@ package assignment2;
 import assignment2.GUI.MainWindow;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,8 +68,11 @@ public class Application {
 
             BigDecimal price = rs.getBigDecimal("price");
             int quant = rs.getInt("quantity");
+            Timestamp created = rs.getTimestamp("created_at");
+            Timestamp updated = rs.getTimestamp("updated_at");
+            //Timestamp updated = rs.getTimestamp("updated_at");
 
-            return new Product(id, name, desc, cat, price, quant);     
+            return new Product(id, name, desc, cat, price, quant, created, updated);     
         }catch (Exception e) {
             e.printStackTrace();
         }   
