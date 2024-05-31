@@ -2,159 +2,32 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package assignment2;
+package assignment2.GUI;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import assignment2.Product;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import static java.lang.String.format;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.List;
 import javax.swing.InputVerifier;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.text.NumberFormatter;
 
 /**
  *
  * @author hayae
  */
-public class GUI extends JFrame {
-    
-    public ProductTableModel productTable;
-    public ProductPanel productPanel;
-    
-    String[] columnNames = {"Product", "Quantity", "Price"};
-    Object[][] data = {};
-    Application app;
-    
-    public GUI(Application app) {
-        this.app = app;
-        
-        setTitle("InventorySystem");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(400, 300));
-        
-        productTable = new ProductTableModel(app.products, this);
-        JTable table = new JTable(productTable);        
-        productTable.addTableMouseListener(table);
-        
-        ProductPanel pP = new ProductPanel(this);
-        this.productPanel = pP;
 
-        // Create a scroll pane and add the table to it
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        // Create a panel for the table and add the scroll pane to it
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
-
-        // Create a panel and add components
-        JPanel panel = new JPanel();
-        panel.add(tablePanel);
-        panel.add(pP);
-
-        // Add the panel to the frame
-        add(panel);
-
-        // Set default window size
-        setPreferredSize(new Dimension(1000, 1000));
-
-        pack();
-        setLocationRelativeTo(null);
-    }
-    
-    public class ProductTableModel extends AbstractTableModel {
-        private final String[] columnNames = {"Item", "Quantity", "Price"};
-        private List<Product> products;
-        private GUI gui;
-
-        public ProductTableModel(List<Product> products, GUI gui) {
-            this.products = products;
-            this.gui = gui;
-        }
-        
-        public void updateTable(List<Product> products) {
-            this.products = products;        
-            fireTableDataChanged();
-        }
-
-        @Override
-        public int getRowCount() {
-            return products.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return columnNames[column];
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Product product = products.get(rowIndex);
-            switch (columnIndex) {
-                case 0:
-                    return product.getTitle();
-                case 1:
-                    return product.getQuantity();
-                case 2:
-                    return product.getPrice();
-                default:
-                    return null;
-            }
-        }
-
-        public Product getProductAt(int rowIndex) {
-            return products.get(rowIndex);
-        }
-
-        public void addTableMouseListener(final JTable table) {
-            table.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 1) { // Single click, probably not needed
-                    
-                    } else if (e.getClickCount() == 2) { // Double click
-                        int rowIndex = table.rowAtPoint(e.getPoint());
-                        if (rowIndex >= 0) {
-                            // Handle double click event on the row
-                            
-                            // Perform desired action with the double-clicked product
-                            System.out.println("Attempting to load product Id:" + products.get(rowIndex).getId());
-                            gui.productPanel.loadProduct(products.get(rowIndex).getId());
-                            
-                            
-                        }
-                    }
-                }
-            });
-        }
-    }
     
     public class ProductPanel extends JPanel {
         private JTextField titleField;
@@ -165,10 +38,10 @@ public class GUI extends JFrame {
         private JButton createButton;
         private JButton discardButton;
         
-        private GUI gui;        
+        private MainWindow gui;        
         private boolean isEditing = false;
 
-        public ProductPanel(GUI gui) {
+        public ProductPanel(MainWindow gui) {
             this.gui = gui;
             
             setLayout(new GridBagLayout());
@@ -277,13 +150,15 @@ public class GUI extends JFrame {
             //Create button
             createButton = new JButton("Create");
             createButton.addActionListener(e -> {
-                app.createProduct(createProduct());                
+                gui.app.createProduct(createProduct());                
             });
             
             //Create button
             discardButton = new JButton("Discard");
             discardButton.addActionListener(e -> {
-                resetFields();
+                resetFields();   
+                gui.hideAllPanels();
+                gui.tablePanel.setVisible(true);
             });
             
             
@@ -297,6 +172,9 @@ public class GUI extends JFrame {
             add(discardButton, constraints);
             
             this.priceField = priceField;
+            
+            //Reset the fields
+            resetFields();
         }
         
         public Product createProduct() {
@@ -328,7 +206,6 @@ public class GUI extends JFrame {
             categoryComboBox.setText("");
             priceField.setValue(BigDecimal.ZERO);
             quantitySpinner.setValue(0);
-            
         }
 
         // Getter methods for retrieving the entered data
@@ -353,13 +230,3 @@ public class GUI extends JFrame {
             return (int) quantitySpinner.getValue();
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                //new GUI().setVisible(true);
-            }
-        });
-    }
-    
-}

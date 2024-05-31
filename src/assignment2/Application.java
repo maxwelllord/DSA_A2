@@ -5,6 +5,7 @@
 package assignment2;
 
 
+import assignment2.GUI.MainWindow;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -17,12 +18,12 @@ import java.util.List;
  */
 public class Application {
     
-    List<Product> products = new ArrayList<>();    
+    public List<Product> products = new ArrayList<>();    
     private List<Customer> customers = new ArrayList<>();    
     private List<Order> orders = new ArrayList<>();
     
     Database db;
-    GUI gui;
+    MainWindow gui;
     
     public static void main(String[] args) {
         
@@ -30,7 +31,7 @@ public class Application {
         
         Application app = new Application(db);        
         app.resultSetToProducts(db.getProducts());    
-        GUI gui = new GUI(app);
+        MainWindow gui = new MainWindow(app);
         app.gui = gui;
         gui.setVisible(true);
         
