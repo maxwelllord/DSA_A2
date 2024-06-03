@@ -29,202 +29,202 @@ import javax.swing.text.NumberFormatter;
  */
 
     
-    public class ProductEditorPanel extends JPanel {
-        private JTextField titleField;
-        private JTextArea descriptionArea;
-        private JTextField categoryComboBox;
-        private JFormattedTextField priceField;
-        private JSpinner quantitySpinner;
-        private JButton createButton;
-        private JButton discardButton;
-        
-        private MainWindow gui;        
-        private boolean isEditing = false;
+public class ProductEditorPanel extends JPanel {
+    private JTextField titleField;
+    private JTextArea descriptionArea;
+    private JTextField categoryComboBox;
+    private JFormattedTextField priceField;
+    private JSpinner quantitySpinner;
+    private JButton createButton;
+    private JButton discardButton;
 
-        public ProductEditorPanel(MainWindow gui) {
-            this.gui = gui;
-            
-            setLayout(new GridBagLayout());
-            GridBagConstraints constraints = new GridBagConstraints();
-            constraints.insets = new Insets(5, 5, 5, 5);
+    private MainWindow gui;        
+    private boolean isEditing = false;
 
-            // Title
-            JLabel titleLabel = new JLabel("Title:");
-            constraints.gridx = 0;
-            constraints.gridy = 0;
-            add(titleLabel, constraints);
+    public ProductEditorPanel(MainWindow gui) {
+        this.gui = gui;
 
-            titleField = new JTextField(20);
-            constraints.gridx = 1;
-            constraints.gridy = 0;
-            add(titleField, constraints);
+        setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.insets = new Insets(5, 5, 5, 5);
 
-            // Description
-            JLabel descriptionLabel = new JLabel("Description:");
-            constraints.gridx = 0;
-            constraints.gridy = 1;
-            add(descriptionLabel, constraints);
+        // Title
+        JLabel titleLabel = new JLabel("Title:");
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        add(titleLabel, constraints);
 
-            descriptionArea = new JTextArea(4, 20);
-            descriptionArea.setLineWrap(true);
-            JScrollPane scrollPane = new JScrollPane(descriptionArea);
-            constraints.gridx = 1;
-            constraints.gridy = 1;
-            add(scrollPane, constraints);
+        titleField = new JTextField(20);
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        add(titleField, constraints);
 
-            // Category
-            JLabel categoryLabel = new JLabel("Category:");
-            constraints.gridx = 0;
-            constraints.gridy = 2;
-            add(categoryLabel, constraints);
-            
-            categoryComboBox = new JTextField(20);
-            constraints.gridx = 1;
-            constraints.gridy = 2;
-            add(categoryComboBox, constraints);
+        // Description
+        JLabel descriptionLabel = new JLabel("Description:");
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        add(descriptionLabel, constraints);
 
-            // Price
-            JLabel priceLabel = new JLabel("Price:");
-            constraints.gridx = 0;
-            constraints.gridy = 3;
-            add(priceLabel, constraints);
+        descriptionArea = new JTextArea(4, 20);
+        descriptionArea.setLineWrap(true);
+        JScrollPane scrollPane = new JScrollPane(descriptionArea);
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        add(scrollPane, constraints);
 
-            NumberFormat numberFormat = NumberFormat.getNumberInstance();
-            numberFormat.setMaximumFractionDigits(2);
-            numberFormat.setMinimumFractionDigits(2);
+        // Category
+        JLabel categoryLabel = new JLabel("Category:");
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        add(categoryLabel, constraints);
 
-            NumberFormatter formatter = new NumberFormatter(numberFormat);
-            formatter.setValueClass(BigDecimal.class);
-            formatter.setAllowsInvalid(false);
-            
-            JFormattedTextField priceField = new JFormattedTextField(formatter);
-            priceField.setFocusLostBehavior(JFormattedTextField.COMMIT);
-            
-            priceField.setInputVerifier(new InputVerifier() {
-                @Override
-                public boolean verify(JComponent input) {
-                    JFormattedTextField field = (JFormattedTextField) input;
-                    String text = field.getText();
-                    System.out.println(text);
+        categoryComboBox = new JTextField(20);
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        add(categoryComboBox, constraints);
 
-                    // Strip text of non-numerics
-                    text = text.replaceAll("[^\\d.]", "");
+        // Price
+        JLabel priceLabel = new JLabel("Price:");
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        add(priceLabel, constraints);
 
-                    if (text.isEmpty()) {
-                        field.setValue(BigDecimal.ZERO);
-                        return false;
-                    }
+        NumberFormat numberFormat = NumberFormat.getNumberInstance();
+        numberFormat.setMaximumFractionDigits(2);
+        numberFormat.setMinimumFractionDigits(2);
 
-                    try {
-                        BigDecimal price = new BigDecimal(text);
-                        if (price.compareTo(BigDecimal.ZERO) >= 0) {
-                            field.setValue(price);
-                            return true; // Valid price
-                        }
-                    } catch (NumberFormatException e) {
-                        // Handle invalid input
-                    }
+        NumberFormatter formatter = new NumberFormatter(numberFormat);
+        formatter.setValueClass(BigDecimal.class);
+        formatter.setAllowsInvalid(false);
 
+        JFormattedTextField priceField = new JFormattedTextField(formatter);
+        priceField.setFocusLostBehavior(JFormattedTextField.COMMIT);
+
+        priceField.setInputVerifier(new InputVerifier() {
+            @Override
+            public boolean verify(JComponent input) {
+                JFormattedTextField field = (JFormattedTextField) input;
+                String text = field.getText();
+                System.out.println(text);
+
+                // Strip text of non-numerics
+                text = text.replaceAll("[^\\d.]", "");
+
+                if (text.isEmpty()) {
                     field.setValue(BigDecimal.ZERO);
                     return false;
                 }
-            });
-            
-            priceField.setColumns(10);
-            constraints.gridx = 1;
-            constraints.gridy = 3;
-            add(priceField, constraints);
 
-            // Quantity
-            JLabel quantityLabel = new JLabel("Quantity:");
-            constraints.gridx = 0;
-            constraints.gridy = 4;
-            add(quantityLabel, constraints);
+                try {
+                    BigDecimal price = new BigDecimal(text);
+                    if (price.compareTo(BigDecimal.ZERO) >= 0) {
+                        field.setValue(price);
+                        return true; // Valid price
+                    }
+                } catch (NumberFormatException e) {
+                    // Handle invalid input
+                }
 
-            //spinner
-            quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
-            constraints.gridx = 1;
-            constraints.gridy = 4;
-            add(quantitySpinner, constraints);
-            
-            //Create button
-            createButton = new JButton("Create");
-            createButton.addActionListener(e -> {
-                gui.app.createProduct(createProduct());                
-            });
-            
-            //Create button
-            discardButton = new JButton("Discard");
-            discardButton.addActionListener(e -> {
-                resetFields();   
-                gui.hideAllPanels();
-                gui.tablePanel.setVisible(true);
-            });
-            
-            
-            constraints.gridx = 0;
-            constraints.gridy = 5;
-            add(createButton, constraints);
-            
-            
-            constraints.gridx = 1;
-            constraints.gridy = 5;
-            add(discardButton, constraints);
-            
-            this.priceField = priceField;
-            
-            //Reset the fields
-            resetFields();
-        }
-        
-        public Product createProduct() {
-            String title = getTitle();
-            String desc = getDescription();
-            String cat = getCategory();
-            BigDecimal price = getPrice();
-            int quant = getQuantity();
-            
-            return new Product(-1, title, desc, cat, price, quant);
-        }
-        
-        //load product for editing
-        public void loadProduct(int productId) {
-            Product p = gui.app.getProductById(productId);
-            
-            titleField.setText(p.getTitle());
-            descriptionArea.setText(p.getDescription());
-            categoryComboBox.setText(p.getCategory());
-            priceField.setValue(p.getPrice());
-            quantitySpinner.setValue(p.getQuantity());
-        }
-        
-        public void resetFields() {            
-            titleField.setText("");
-            descriptionArea.setText("");
-            categoryComboBox.setText("");
-            priceField.setValue(BigDecimal.ZERO);
-            quantitySpinner.setValue(0);
-        }
+                field.setValue(BigDecimal.ZERO);
+                return false;
+            }
+        });
 
-        // Getter methods for retrieving the entered data
-        public String getTitle() {
-            return titleField.getText();
-        }
+        priceField.setColumns(10);
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        add(priceField, constraints);
 
-        public String getDescription() {
-            return descriptionArea.getText();
-        }
+        // Quantity
+        JLabel quantityLabel = new JLabel("Quantity:");
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        add(quantityLabel, constraints);
 
-        public String getCategory() {
-            return (String) categoryComboBox.getText();
-        }
+        //spinner
+        quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        add(quantitySpinner, constraints);
 
-        public BigDecimal getPrice() {
-            System.out.println(priceField);
-            return new BigDecimal(priceField.getText());
-        }
+        //Create button
+        createButton = new JButton("Create");
+        createButton.addActionListener(e -> {
+            gui.app.createProduct(createProduct());                
+        });
 
-        public int getQuantity() {
-            return (int) quantitySpinner.getValue();
-        }
+        //Create button
+        discardButton = new JButton("Discard");
+        discardButton.addActionListener(e -> {
+            resetFields();   
+            gui.hideAllPanels();
+            gui.tablePanel.setVisible(true);
+        });
+
+
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        add(createButton, constraints);
+
+
+        constraints.gridx = 1;
+        constraints.gridy = 5;
+        add(discardButton, constraints);
+
+        this.priceField = priceField;
+
+        //Reset the fields
+        resetFields();
     }
+
+    public Product createProduct() {
+        String title = getTitle();
+        String desc = getDescription();
+        String cat = getCategory();
+        BigDecimal price = getPrice();
+        int quant = getQuantity();
+
+        return new Product(-1, title, desc, cat, price, quant);
+    }
+
+    //load product for editing
+    public void loadProduct(int productId) {
+        Product p = gui.app.getProductById(productId);
+
+        titleField.setText(p.getTitle());
+        descriptionArea.setText(p.getDescription());
+        categoryComboBox.setText(p.getCategory());
+        priceField.setValue(p.getPrice());
+        quantitySpinner.setValue(p.getQuantity());
+    }
+
+    public void resetFields() {            
+        titleField.setText("");
+        descriptionArea.setText("");
+        categoryComboBox.setText("");
+        priceField.setValue(BigDecimal.ZERO);
+        quantitySpinner.setValue(0);
+    }
+
+    // Getter methods for retrieving the entered data
+    public String getTitle() {
+        return titleField.getText();
+    }
+
+    public String getDescription() {
+        return descriptionArea.getText();
+    }
+
+    public String getCategory() {
+        return (String) categoryComboBox.getText();
+    }
+
+    public BigDecimal getPrice() {
+        System.out.println(priceField);
+        return new BigDecimal(priceField.getText());
+    }
+
+    public int getQuantity() {
+        return (int) quantitySpinner.getValue();
+    }
+}
