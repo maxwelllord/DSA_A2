@@ -155,10 +155,8 @@ public class OrderEditorPanel extends JPanel  {
         
         searchTableModel = new ProductSearchTableModel(searchedProducts);
         JTable table = new JTable(searchTableModel);
-        // Set the table's preferred scroll viewport size
+        
         table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredSize().width, table.getRowHeight() * 5));
-
-        // Disable auto resizing of table columns
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         
         JScrollPane searchScrollPane = new JScrollPane(table);
@@ -178,6 +176,8 @@ public class OrderEditorPanel extends JPanel  {
         Product[][] data = {};
         
         JTable orderProductsTable = new JTable(data, columnNames);
+        
+        orderProductsTable.setPreferredScrollableViewportSize(new Dimension(orderProductsTable.getPreferredSize().width, orderProductsTable.getRowHeight() * 10));
         JScrollPane scrollPane = new JScrollPane(orderProductsTable);
         gbc.gridx = 0;
         gbc.gridy = yPos;
