@@ -4,10 +4,17 @@
  */
 package assignment2.GUI;
 
+import assignment2.Order;
 import assignment2.Product;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,7 +29,17 @@ import javax.swing.JTextField;
 public class OrderEditorPanel extends JPanel  {
     private JComboBox orderStatus; 
     private JTextField orderShippingAddress;
+    
     private Product[] orderProducts;
+    
+    private List<Product> searchedProducts = new ArrayList<>();
+
+    JTextField productSearchField;
+    
+    private JTextField firstName;    
+    private JTextField lastName;
+    
+    private ProductSearchTableModel searchTableModel;
     
     private final MainWindow gui;
 
@@ -32,13 +49,48 @@ public class OrderEditorPanel extends JPanel  {
     }
 
     private void initComponents() {
+        int yPos = 0;
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Order Status Label
+        JLabel firstnameLabel = new JLabel("First Name:");
+        gbc.gridx = 0;
+        gbc.gridy = yPos;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        add(firstnameLabel, gbc);
+
+        // Order Shipping Address Text Field
+        firstName = new JTextField(20);
+        gbc.gridx = 1;
+        gbc.gridy = yPos;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(firstName, gbc);
+        
+        yPos++;
+
+        // Order Status Label
+        JLabel lastNameLabel = new JLabel("Last Name:");
+        gbc.gridx = 0;
+        gbc.gridy = yPos;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        add(lastNameLabel, gbc);
+
+        // Order Shipping Address Text Field
+        lastName = new JTextField(20);
+        gbc.gridx = 1;
+        gbc.gridy = yPos;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(lastName, gbc);
+        
+        yPos++;
+
+        // Order Status Label
         JLabel orderStatusLabel = new JLabel("Order Status:");
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = yPos;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 5, 5, 5);
         add(orderStatusLabel, gbc);
@@ -47,47 +99,141 @@ public class OrderEditorPanel extends JPanel  {
         String[] statusOptions = {"Pending", "Processing", "Shipped", "Delivered"};
         orderStatus = new JComboBox<>(statusOptions);
         gbc.gridx = 1;
-        gbc.gridy = 0;
+        gbc.gridy = yPos;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         add(orderStatus, gbc);
+        
+        yPos++;
 
-        // Order Shipping Address Label
+        // SHIPPING ADDDRESS LABEL
         JLabel orderShippingAddressLabel = new JLabel("Shipping Address:");
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = yPos;
         gbc.anchor = GridBagConstraints.WEST;
         add(orderShippingAddressLabel, gbc);
 
-        // Order Shipping Address Text Field
+        // SHIPPING ADDRESS FIELD
         orderShippingAddress = new JTextField(20);
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = yPos;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         add(orderShippingAddress, gbc);
-
-        // Order Products Label
-        JLabel orderProductsLabel = new JLabel("Order Products:");
+        
+        yPos++;
+            
+        // SEARCH PRODUCTS LABEL
+        JLabel searchLabel = new JLabel("Search Products:");
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        add(orderProductsLabel, gbc);
+        gbc.gridy = yPos;
+        gbc.anchor = GridBagConstraints.WEST;        
+        add(searchLabel, gbc);
+
+        // SEARCH PRODUCT FIELD
+        productSearchField = new JTextField(20);
+        gbc.gridx = 1;
+        gbc.gridy = yPos;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        productSearchField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchText = productSearchField.getText();
+                // Perform actions with the search text
+                System.out.println("Search text: " + searchText);
+                
+                if (searchText.equals("")) {
+                    // Blank the table if there is no search query                    
+                    searchTableModel.setProducts(new ArrayList<>());
+                    return;
+                }
+                
+                searchTableModel.setProducts(gui.app.getProductsByTitle(searchText));
+            }
+        });
+        add(productSearchField, gbc);
+        
+        yPos++;
+        
+        searchTableModel = new ProductSearchTableModel(searchedProducts);
+        JTable table = new JTable(searchTableModel);
+        // Set the table's preferred scroll viewport size
+        table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredSize().width, table.getRowHeight() * 5));
+
+        // Disable auto resizing of table columns
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        
+        JScrollPane searchScrollPane = new JScrollPane(table);
+        
+        gbc.gridx = 0;
+        gbc.gridy = yPos;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        add(searchScrollPane, gbc);
+        
+        yPos++;
 
         // Order Products Table
-        // Replace this junk data later
         String[] columnNames = {"Product", "Quantity", "Price"};
-        Object[][] data = {
-            {"Product 1", 2, 10.99},
-            {"Product 2", 1, 5.99},
-            {"Product 3", 3, 8.99}
-        };
+        Product[][] data = {};
+        
         JTable orderProductsTable = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(orderProductsTable);
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = yPos;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         add(scrollPane, gbc);
+        
+        yPos++;
+            
+        // ORDER TOTAL PRICE
+        JLabel totalPriceLabel = new JLabel("TOTAL PRICE:");
+        gbc.gridx = 0;
+        gbc.gridy = yPos;
+        gbc.anchor = GridBagConstraints.WEST;        
+        add(totalPriceLabel, gbc);
+        
+        yPos++;
+
+        //Create button
+        JButton createButton = new JButton("Create");
+        createButton.addActionListener(e -> {
+            gui.app.createOrder(createOrder());                
+        });
+        
+        gbc.gridx = 0;
+        gbc.gridy = yPos;
+        gbc.fill = GridBagConstraints.RELATIVE;
+        add(createButton, gbc);
+
+        //Create button
+        JButton discardButton = new JButton("Discard");
+        discardButton.addActionListener(e -> {
+            resetFields();   
+            gui.hideAllPanels();
+            gui.tablePanel.setVisible(true);
+        });
+        
+        gbc.gridx = 1;
+        gbc.gridy = yPos;
+        add(discardButton, gbc);
+        
+        yPos++;
+    }
+    
+    private Order createOrder() {
+        return new Order("", "", orderProducts, "", "");
+    }
+    
+    private void resetFields() {
+        
+    }
+    
+    private void addProduct() {
+        System.out.println("Adding product");
+        
     }
 }

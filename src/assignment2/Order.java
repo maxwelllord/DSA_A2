@@ -43,15 +43,13 @@ public class Order {
     }
 
     // Constructor
-    public Order(String customerName, String customerEmail, Product[] products, String shippingAddress, String billingAddress, Timestamp createdAt) {
+    public Order(String customerName, String customerEmail, Product[] products, String shippingAddress, String billingAddress) {
         this.customerName = customerName;
         this.customerEmail = customerEmail;
         this.lineItems = products;
         this.shippingAddress = shippingAddress;
         this.billingAddress = billingAddress;
         this.status = OrderStatus.DRAFT;
-        this.createdAt = createdAt;
-        this.updatedAt = createdAt;
     }
 
     // Getters and Setters

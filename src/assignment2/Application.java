@@ -30,7 +30,7 @@ public class Application {
         Database db = new Database();
         
         Application app = new Application(db);        
-        app.resultSetToProducts(db.getProducts());    
+        app.products = app.resultSetToProducts(db.getProducts());    
         MainWindow gui = new MainWindow(app);
         app.gui = gui;
         gui.setVisible(true);
@@ -43,15 +43,18 @@ public class Application {
     }
     
     //unpack the result of a query into a Product object
-    public void resultSetToProducts(ResultSet rs) {
+    public List<Product> resultSetToProducts(ResultSet rs) {
+        List<Product> temp = new ArrayList<>();  
         try {
         
             while (rs.next()) {
-                products.add(rsToProduct(rs));                
+                temp.add(rsToProduct(rs));                
             }            
         } catch (Exception e) {
             e.printStackTrace();
-        }        
+        }  
+        
+        return temp;
     }
     
     public Product rsToProduct(ResultSet rs) {
@@ -88,6 +91,10 @@ public class Application {
         this.gui.productTable.updateTable(products);
     }
     
+    public void createOrder(Order newOrder) {
+        
+    }
+    
     public Product getProductById(int id) {
         ResultSet rs = this.db.getProductById(id);
         System.out.println(rs);
@@ -107,5 +114,9 @@ public class Application {
         for (Product p : products) {
             System.out.println(p);
         }
+    }
+    
+    public List<Product> getProductsByTitle(String titleSubstring) {
+        return resultSetToProducts(db.getProductByTitleSubstring(titleSubstring));
     }
 }

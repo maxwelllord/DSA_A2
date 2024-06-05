@@ -91,4 +91,10 @@ public class Database {
     public ResultSet getProducts() {
         return executeQuery("SELECT * FROM products");
     }   
+    
+    public ResultSet getProductByTitleSubstring(String titleSubstring) {
+        String query = "SELECT * FROM products WHERE name LIKE '%" + titleSubstring + "%'";
+        System.out.println(query);
+        return executeQuery(query);
+    }
 }

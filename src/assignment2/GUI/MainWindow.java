@@ -22,6 +22,7 @@ public class MainWindow extends JFrame {
     public JPanel tablePanel;
     public ProductEditorPanel productEditorPanel;
     ProductDisplayPanel productDisplayPanel;
+    public OrderEditorPanel orderEditorPanel;
     
     String[] columnNames = {"Product", "Quantity", "Price"};
     Object[][] data = {};
@@ -43,12 +44,17 @@ public class MainWindow extends JFrame {
         ProductEditorPanel pP = new ProductEditorPanel(this);
         this.productEditorPanel = pP;
         this.productEditorPanel.setVisible(false);
+        
+        OrderEditorPanel oP = new OrderEditorPanel(this);
+        this.orderEditorPanel = oP;
+        this.orderEditorPanel.setVisible(true);
 
         // Create a panel and add components
         JPanel panel = new JPanel();
         panel.add(tablePanel);
         panel.add(productEditorPanel);
         panel.add(productDisplayPanel);
+        panel.add(oP);
 
         // Add the panel to the frame
         add(panel);
