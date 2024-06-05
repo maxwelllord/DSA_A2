@@ -5,9 +5,12 @@
 package assignment2.GUI;
 
 import assignment2.Product;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
+import java.util.TimerTask;
 
 /**
  *
@@ -16,8 +19,11 @@ import java.util.List;
 public class ProductSearchTableModel extends AbstractTableModel{
     private String[] columnNames = {"ID", "Title", "Description", "Category", "Price", "Quantity"};
     private List<Product> products;
+    
+    private OrderEditorPanel orderEditorPanel;
 
-    public ProductSearchTableModel(List<Product> products) {
+    public ProductSearchTableModel(OrderEditorPanel orderEditorPanel,List<Product> products) {
+        this.orderEditorPanel = orderEditorPanel;
         this.products = products;
     }
 
@@ -60,5 +66,23 @@ public class ProductSearchTableModel extends AbstractTableModel{
             default:
                 return null;
         }
+    }
+
+    public void addTableMouseListener(final JTable table) {
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                int rowIndex = table.rowAtPoint(e.getPoint());
+                if (e.getClickCount() == 2) { // Double click
+                    if (rowIndex >= 0) {
+                        
+                        System.out.println("Adding product:" + products.get(rowIndex).getId());
+                        
+                        orderEditorPanel.addProduct(products.get(rowIndex));
+                    }
+                }
+            }
+        });
     }
 }

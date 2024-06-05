@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -29,12 +30,13 @@ import javax.swing.JTextField;
 public class OrderEditorPanel extends JPanel  {
     private JComboBox orderStatus; 
     private JTextField orderShippingAddress;
-    
-    private Product[] orderProducts;
-    
-    private List<Product> searchedProducts = new ArrayList<>();
 
-    JTextField productSearchField;
+    JTextField productSearchField;    
+    private List<Product> searchedProducts = new ArrayList<>();
+    
+    
+    JPanel itemListPanel;    
+    private List<Product> orderProducts = new ArrayList<>();
     
     private JTextField firstName;    
     private JTextField lastName;
@@ -153,9 +155,12 @@ public class OrderEditorPanel extends JPanel  {
         
         yPos++;
         
-        searchTableModel = new ProductSearchTableModel(searchedProducts);
+        // PRODUCT SEARCH TABLE
+        
+        searchTableModel = new ProductSearchTableModel(this,searchedProducts);
         JTable table = new JTable(searchTableModel);
         
+        searchTableModel.addTableMouseListener(table);
         table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredSize().width, table.getRowHeight() * 5));
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         
@@ -170,23 +175,22 @@ public class OrderEditorPanel extends JPanel  {
         add(searchScrollPane, gbc);
         
         yPos++;
-
-        // Order Products Table
-        String[] columnNames = {"Product", "Quantity", "Price"};
-        Product[][] data = {};
         
-        JTable orderProductsTable = new JTable(data, columnNames);
+        //
+        // PRODUCTS IN THE ORDER
+        //
         
-        orderProductsTable.setPreferredScrollableViewportSize(new Dimension(orderProductsTable.getPreferredSize().width, orderProductsTable.getRowHeight() * 10));
-        JScrollPane scrollPane = new JScrollPane(orderProductsTable);
+        itemListPanel = new JPanel();
+        itemListPanel.setLayout(new BoxLayout(itemListPanel, BoxLayout.Y_AXIS));
+        
+        JLabel noProductsLabel = new JLabel("No products");
+        itemListPanel.add(noProductsLabel);
+        
         gbc.gridx = 0;
         gbc.gridy = yPos;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        add(scrollPane, gbc);
-        
+        add(itemListPanel,gbc); 
         yPos++;
             
         // ORDER TOTAL PRICE
@@ -225,15 +229,36 @@ public class OrderEditorPanel extends JPanel  {
     }
     
     private Order createOrder() {
-        return new Order("", "", orderProducts, "", "");
+        return new Order("", "", null, "", "");
+        //orderProducts.toArray()
     }
     
     private void resetFields() {
         
     }
     
-    private void addProduct() {
-        System.out.println("Adding product");
+    public void addProduct(Product newProduct) {
+        orderProducts.add(newProduct);
+        updateOrderProducts();
+    }
+    
+    public void updateOrderProducts() {
+        itemListPanel.removeAll();
+        itemListPanel.revalidate();
         
+        if (this.orderProducts.size() == 0) {
+            JLabel noProductsLabel = new JLabel("No products");
+            itemListPanel.add(noProductsLabel);
+        } else {           
+        
+            for (Product p : this.orderProducts) {
+                OrderProductItem item = new OrderProductItem(this, p);
+                itemListPanel.add(item);
+            }
+        }
+        
+        System.out.println(orderProducts);
+        
+        itemListPanel.repaint();
     }
 }
