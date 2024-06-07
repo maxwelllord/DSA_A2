@@ -101,6 +101,6 @@ public class Product {
     
     @Override
     public String toString() {
-        return this.title + " $" + this.price;
+        return this.id + " | " + this.title + " $" + this.price;
     }
 }

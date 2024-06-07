@@ -29,23 +29,24 @@ import javax.swing.JTextField;
  * @author hayae
  */
 public class OrderEditorPanel extends JPanel  {
-    private JComboBox orderStatus; 
-    private JTextField orderShippingAddress;
-
-    JTextField productSearchField;    
-    private List<Product> searchedProducts = new ArrayList<>();
-    
-    
-    JPanel itemListPanel;    
-    private List<Product> orderProducts = new ArrayList<>();
-    
+    //Fields that need to be read to create an order
     private JTextField firstName;    
     private JTextField lastName;
+    private JTextField orderShippingAddress;
+    private JComboBox orderStatus;
+
+    JTextField productSearchField;       
+    JPanel itemListPanel; 
+    
+    private List<Product> searchedProducts = new ArrayList<>(); //products display to the user to be picked for the order
+    private List<Product> orderProducts = new ArrayList<>(); //products in the order
     
     private ProductSearchTableModel searchTableModel;
     
     private Application app;
     private OrderTab orderTab;
+    
+    private boolean isEditing = false;
 
     public OrderEditorPanel(Application app, OrderTab orderTab) {
         this.app = app;
@@ -101,8 +102,9 @@ public class OrderEditorPanel extends JPanel  {
         add(orderStatusLabel, gbc);
 
         // Order Status Combo Box
-        String[] statusOptions = {"Pending", "Processing", "Shipped", "Delivered"};
-        orderStatus = new JComboBox<>(statusOptions);
+        Order.OrderStatus[] orderStatuses = Order.OrderStatus.values();      
+        
+        orderStatus = new JComboBox<>(orderStatuses);
         gbc.gridx = 1;
         gbc.gridy = yPos;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -208,7 +210,7 @@ public class OrderEditorPanel extends JPanel  {
         //Create button
         JButton createButton = new JButton("Create");
         createButton.addActionListener(e -> {
-            orderTab.gui.app.createOrder(createOrder());                
+            app.createOrder(createOrder());                
         });
         
         gbc.gridx = 0;
@@ -232,8 +234,22 @@ public class OrderEditorPanel extends JPanel  {
     }
     
     private Order createOrder() {
-        return new Order("", "", null, "", "");
-        //orderProducts.toArray()
+        Product[] prods = orderProducts.toArray(new Product[0]);
+        
+        
+        System.out.println(prods.length);
+        
+        if (prods.length == 0) {
+            System.out.println("Order needs at least one product");
+            return null;
+        }
+        
+        return new Order(
+            this.firstName.getText(),
+            this.lastName.getText(),
+            prods,
+            this.orderShippingAddress.getText(),
+            (Order.OrderStatus) this.orderStatus.getSelectedItem());
     }
     
     private void resetFields() {

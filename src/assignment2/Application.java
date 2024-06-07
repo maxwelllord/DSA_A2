@@ -93,6 +93,38 @@ public class Application {
     
     public void createOrder(Order newOrder) {
         
+        String query = "INSERT INTO ORDERS (CUSTOMER_FNAME, CUSTOMER_LNAME, STATUS, SHIPPING_ADDRESS)\n" +
+            "VALUES ('" +
+                newOrder.getCustomerFName() + "', '" +
+                newOrder.getCustomerLName() + "', '" +
+                newOrder.getStatus() + "', '" +
+                newOrder.getShippingAddress() + "')";
+        
+        int orderId = this.db.executeUpdateWithGeneratedKey(query);
+        
+        System.out.println("ID:" + orderId);
+        
+        String orderItemsQuery = "INSERT INTO ORDER_ITEMS (ORDER_ID, PRODUCT_ID, QUANTITY)\n VALUES ";
+
+        Product[] lineItems = newOrder.getLineItems();
+        for (int i = 0; i < lineItems.length; i++) {
+            Product lineItem = lineItems[i];
+            System.out.println(lineItem);
+            orderItemsQuery += "(" + orderId + "," +
+                lineItem.getId() + ", " +
+                lineItem.getQuantity() + ")";
+
+            if (i < lineItems.length - 1) {
+                orderItemsQuery += ", ";
+            }
+        }
+
+        this.db.executeUpdate(orderItemsQuery);
+        
+        orders.add(newOrder); //add the order to the order table
+        
+        //this.gui.productTab.productTable.updateTable(products);
+        
     }
     
     public Product getProductById(int id) {

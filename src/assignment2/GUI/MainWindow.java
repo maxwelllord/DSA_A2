@@ -33,8 +33,7 @@ public class MainWindow extends JFrame {
         
         productTab = new ProductTab(app, this);
         orderTab = new OrderTab(app);
-
-        // Create a JTabbedPane
+        
         JTabbedPane tabbedPane = new JTabbedPane();
         
         tabbedPane.add(orderTab);
@@ -44,9 +43,9 @@ public class MainWindow extends JFrame {
         tabbedPane.setTitleAt(1,"Products");
         
         add(tabbedPane);
-        // Set default window size
+        
+        
         setPreferredSize(new Dimension(1000, 1000));
-
         pack();
         setLocationRelativeTo(null);
     }   

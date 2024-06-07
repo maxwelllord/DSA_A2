@@ -43,6 +43,30 @@ public class Database {
             e.printStackTrace();
         }
     }
+    
+    public int executeUpdateWithGeneratedKey(String query) {
+        int generatedKey = -1;
+    ResultSet resultSet = null;
+
+
+        try {
+            Statement statement = connection.createStatement();
+
+            int rowsAffected = statement.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+
+            if (rowsAffected > 0) {
+                resultSet = statement.getGeneratedKeys();
+                if (resultSet.next()) {
+                    generatedKey = resultSet.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            // Handle the exception appropriately (e.g., log the error, throw a custom exception)
+            e.printStackTrace();
+        }
+
+        return generatedKey;
+    }
 
     public ResultSet executeQuery(String query) {
         try {

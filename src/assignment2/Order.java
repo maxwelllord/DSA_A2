@@ -13,11 +13,10 @@ import java.sql.Timestamp;
 public class Order {
     private int id;
     
-    private String customerName;
-    private String customerEmail;
+    private String customerFName;
+    private String customerLName;
     
     private String shippingAddress;
-    private String billingAddress;
     
     private Timestamp orderDate;
     private Product[] lineItems;
@@ -27,29 +26,29 @@ public class Order {
     
     public enum OrderStatus {
         DRAFT("Draft"),
-        PROCESSING("Processing"),
+        PROCESSING("Paid"),
         SHIPPED("Shipped"),
         CANCELLED("Cancelled");
 
-        private final String displayName;
+        private final String name;
 
-        OrderStatus(String displayName) {
-            this.displayName = displayName;
+        OrderStatus(String name) {
+            this.name = name;
         }
 
-        public String getDisplayName() {
-            return displayName;
+        @Override
+        public String toString() {
+            return name;
         }
     }
 
     // Constructor
-    public Order(String customerName, String customerEmail, Product[] products, String shippingAddress, String billingAddress) {
-        this.customerName = customerName;
-        this.customerEmail = customerEmail;
+    public Order(String customerFName, String customerLName, Product[] products, String shippingAddress, OrderStatus status) {
+        this.customerFName = customerFName;
+        this.customerLName = customerLName;
         this.lineItems = products;
         this.shippingAddress = shippingAddress;
-        this.billingAddress = billingAddress;
-        this.status = OrderStatus.DRAFT;
+        this.status = status;
     }
 
     // Getters and Setters
@@ -61,20 +60,20 @@ public class Order {
         this.id = id;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getCustomerFName() {
+        return customerFName;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setCustomerFName(String customerFName) {
+        this.customerFName = customerFName;
     }
 
-    public String getCustomerEmail() {
-        return customerEmail;
+    public String getCustomerLName() {
+        return customerLName;
     }
 
-    public void setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
+    public void setCustomerLName(String customerLName) {
+        this.customerLName = customerLName;
     }
 
     public Timestamp getOrderDate() {
@@ -114,15 +113,7 @@ public class Order {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Timestamp getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }
