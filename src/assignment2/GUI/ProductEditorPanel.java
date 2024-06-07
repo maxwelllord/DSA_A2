@@ -38,11 +38,15 @@ public class ProductEditorPanel extends JPanel {
     private JButton createButton;
     private JButton discardButton;
 
-    private MainWindow gui;        
+    private MainWindow gui;
+    private ProductTab productTab;
+    
     private boolean isEditing = false;
+    
 
-    public ProductEditorPanel(MainWindow gui) {
+    public ProductEditorPanel(MainWindow gui, ProductTab productTab) {
         this.gui = gui;
+        this.productTab = productTab;
 
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -157,8 +161,8 @@ public class ProductEditorPanel extends JPanel {
         discardButton = new JButton("Discard");
         discardButton.addActionListener(e -> {
             resetFields();   
-            gui.hideAllPanels();
-            gui.tablePanel.setVisible(true);
+            productTab.hideAllPanels();
+            productTab.tablePanel.setVisible(true);
         });
 
 

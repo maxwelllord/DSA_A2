@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 public class ProductDisplayPanel extends JPanel  {
     
     private final MainWindow gui;
+    private ProductTab productTab;
     
     //display fields
     private JLabel idLabel;
@@ -32,8 +33,9 @@ public class ProductDisplayPanel extends JPanel  {
     
     private JButton backButton;
 
-    public ProductDisplayPanel(MainWindow gui) {
+    public ProductDisplayPanel(MainWindow gui, ProductTab productTab) {
         this.gui = gui;
+        this.productTab = productTab;
         initComponents();
     }
 
@@ -109,8 +111,8 @@ public class ProductDisplayPanel extends JPanel  {
         
         this.backButton = new JButton("Go back");
         backButton.addActionListener(e -> {
-            this.gui.hideAllPanels();
-            this.gui.tablePanel.setVisible(true);
+            this.productTab.hideAllPanels();
+            this.productTab.tablePanel.setVisible(true);
         });
 
         gbc.gridx = 0;

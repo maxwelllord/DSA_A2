@@ -26,6 +26,7 @@ public class ProductTableModel extends AbstractTableModel {
     private final String[] columnNames = {"Item", "Quantity", "Price"};
     private List<Product> products;
     private MainWindow gui;
+    private ProductTab productTab;
 
     private JButton createNewProductButton;
     private JPanel tablePanel;
@@ -33,9 +34,10 @@ public class ProductTableModel extends AbstractTableModel {
     private final int DOUBLE_CLICK_DELAY = 200; //ideally this would be derived from the system
     private Timer singleClickTimer;
 
-    public ProductTableModel(List<Product> products, MainWindow gui) {
+    public ProductTableModel(List<Product> products, MainWindow gui, ProductTab productTab) {
         this.products = products;
         this.gui = gui;
+        this.productTab = productTab;
 
         this.createNewProductButton = new JButton("Create Product");     
         this.createNewProductButton.addActionListener(e -> {
@@ -98,8 +100,8 @@ public class ProductTableModel extends AbstractTableModel {
     }
     
     public void navigateToProductEditor() {
-        gui.hideAllPanels();
-        gui.productEditorPanel.setVisible(true);
+        productTab.hideAllPanels();
+        productTab.productEditorPanel.setVisible(true);
     }
 
     public void addTableMouseListener(final JTable table) {
@@ -117,9 +119,9 @@ public class ProductTableModel extends AbstractTableModel {
                         @Override
                         public void run() {
                             // Execute single click functionality
-                            gui.hideAllPanels();
-                            gui.productDisplayPanel.setProductInfo(products.get(rowIndex));
-                            gui.productDisplayPanel.setVisible(true);
+                            productTab.hideAllPanels();
+                            productTab.productDisplayPanel.setProductInfo(products.get(rowIndex));
+                            productTab.productDisplayPanel.setVisible(true);
                         }
                     }, DOUBLE_CLICK_DELAY);
                 } else if (e.getClickCount() == 2) { // Double click
@@ -130,9 +132,9 @@ public class ProductTableModel extends AbstractTableModel {
                         // Handle double click event on the row
                         // Perform desired action with the double-clicked product
                         System.out.println("Attempting to load product Id:" + products.get(rowIndex).getId());
-                        gui.productEditorPanel.loadProduct(products.get(rowIndex).getId());
-                        gui.hideAllPanels();
-                        gui.productEditorPanel.setVisible(true);
+                        productTab.productEditorPanel.loadProduct(products.get(rowIndex).getId());
+                        productTab.hideAllPanels();
+                        productTab.productEditorPanel.setVisible(true);
                     }
                 }
             }

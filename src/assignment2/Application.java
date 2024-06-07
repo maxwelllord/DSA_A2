@@ -88,7 +88,7 @@ public class Application {
         this.db.executeUpdate(query);
         
         products.add(newProduct);
-        this.gui.productTable.updateTable(products);
+        this.gui.productTab.productTable.updateTable(products);
     }
     
     public void createOrder(Order newOrder) {

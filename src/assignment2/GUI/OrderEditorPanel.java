@@ -4,6 +4,7 @@
  */
 package assignment2.GUI;
 
+import assignment2.Application;
 import assignment2.Order;
 import assignment2.Product;
 import java.awt.Dimension;
@@ -43,10 +44,12 @@ public class OrderEditorPanel extends JPanel  {
     
     private ProductSearchTableModel searchTableModel;
     
-    private final MainWindow gui;
+    private Application app;
+    private OrderTab orderTab;
 
-    public OrderEditorPanel(MainWindow gui) {
-        this.gui = gui;
+    public OrderEditorPanel(Application app, OrderTab orderTab) {
+        this.app = app;
+        this.orderTab = orderTab;
         initComponents();
     }
 
@@ -148,7 +151,7 @@ public class OrderEditorPanel extends JPanel  {
                     return;
                 }
                 
-                searchTableModel.setProducts(gui.app.getProductsByTitle(searchText));
+                searchTableModel.setProducts(app.getProductsByTitle(searchText));
             }
         });
         add(productSearchField, gbc);
@@ -205,7 +208,7 @@ public class OrderEditorPanel extends JPanel  {
         //Create button
         JButton createButton = new JButton("Create");
         createButton.addActionListener(e -> {
-            gui.app.createOrder(createOrder());                
+            orderTab.gui.app.createOrder(createOrder());                
         });
         
         gbc.gridx = 0;
@@ -217,8 +220,8 @@ public class OrderEditorPanel extends JPanel  {
         JButton discardButton = new JButton("Discard");
         discardButton.addActionListener(e -> {
             resetFields();   
-            gui.hideAllPanels();
-            gui.tablePanel.setVisible(true);
+            //orderTab.hideAllPanels();
+            //productTab.tablePanel.setVisible(true);
         });
         
         gbc.gridx = 1;

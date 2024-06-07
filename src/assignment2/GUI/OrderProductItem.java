@@ -14,7 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-//import javax.swing.JSpinner;
+import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 /**
@@ -29,7 +29,7 @@ public class OrderProductItem extends JPanel {
     public OrderEditorPanel orderEditorPanel;
     
     private JLabel titleLabel;
-    //private JSpinner quantitySpinner;
+    private JSpinner quantitySpinner;
     private JButton deleteButton;
 
     public OrderProductItem(OrderEditorPanel orderEditorPanel, Product product) {
@@ -41,10 +41,10 @@ public class OrderProductItem extends JPanel {
         titleLabel = new JLabel(product.getTitle());
         add(titleLabel, BorderLayout.WEST);
 
-//        // Create the quantity spinner
-//        SpinnerModel spinnerModel = new SpinnerNumberModel(product.getQuantity(), 0, Integer.MAX_VALUE, 1);
-//        quantitySpinner = new JSpinner(spinnerModel);
-//        add(quantitySpinner, BorderLayout.CENTER);
+        // Create the quantity spinner
+        SpinnerModel spinnerModel = new SpinnerNumberModel(product.getQuantity(), 0, Integer.MAX_VALUE, 1);
+        quantitySpinner = new JSpinner(spinnerModel);
+        add(quantitySpinner, BorderLayout.CENTER);
 
         // Create the delete button
         deleteButton = new JButton("Delete");
@@ -67,11 +67,11 @@ public class OrderProductItem extends JPanel {
         titleLabel.setText(title);
     }
 
-//    public int getQuantity() {
-//        return (int) quantitySpinner.getValue();
-//    }
-//
-//    public void setQuantity(int quantity) {
-//        quantitySpinner.setValue(quantity);
-//    }
+    public int getQuantity() {
+        return (int) quantitySpinner.getValue();
+    }
+
+    public void setQuantity(int quantity) {
+        quantitySpinner.setValue(quantity);
+    }
 }

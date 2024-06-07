@@ -8,6 +8,7 @@ import assignment2.Application;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -16,13 +17,8 @@ import javax.swing.SwingUtilities;
  */
 public class MainWindow extends JFrame {
     
-    //main views of the GUI
-    public ProductTableModel productTable;
-    public JPanel tableContainer;
-    public JPanel tablePanel;
-    public ProductEditorPanel productEditorPanel;
-    ProductDisplayPanel productDisplayPanel;
-    public OrderEditorPanel orderEditorPanel;
+    public ProductTab productTab;
+    public OrderTab orderTab;
     
     String[] columnNames = {"Product", "Quantity", "Price"};
     Object[][] data = {};
@@ -35,50 +31,23 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(400, 300));
         
-        this.productTable = new ProductTableModel(app.products, this);
-        this.tablePanel = productTable.getTablePanel();
-        
-        this.productDisplayPanel = new ProductDisplayPanel(this);
-        this.productDisplayPanel.setVisible(false);
-        
-        ProductEditorPanel pP = new ProductEditorPanel(this);
-        this.productEditorPanel = pP;
-        this.productEditorPanel.setVisible(false);
-        
-        OrderEditorPanel oP = new OrderEditorPanel(this);
-        this.orderEditorPanel = oP;
-        this.orderEditorPanel.setVisible(true);
+        productTab = new ProductTab(app, this);
+        orderTab = new OrderTab(app);
 
-        // Create a panel and add components
-        JPanel panel = new JPanel();
-        panel.add(tablePanel);
-        panel.add(productEditorPanel);
-        panel.add(productDisplayPanel);
-        panel.add(oP);
-
-        // Add the panel to the frame
-        add(panel);
-
+        // Create a JTabbedPane
+        JTabbedPane tabbedPane = new JTabbedPane();
+        
+        tabbedPane.add(orderTab);
+        tabbedPane.add(productTab);
+        
+        tabbedPane.setTitleAt(0,"Orders");        
+        tabbedPane.setTitleAt(1,"Products");
+        
+        add(tabbedPane);
         // Set default window size
         setPreferredSize(new Dimension(1000, 1000));
 
         pack();
         setLocationRelativeTo(null);
-    }
-    
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                //new GUI().setVisible(true);
-            }
-        });
-    }
-    
-    public void hideAllPanels() {
-        System.out.println("hiding all panels");
-        this.tablePanel.setVisible(false);
-        this.productEditorPanel.setVisible(false);
-        this.productDisplayPanel.setVisible(false);
-    }
-    
+    }   
 }
