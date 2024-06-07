@@ -14,6 +14,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -39,7 +40,7 @@ public class OrderEditorPanel extends JPanel  {
     JPanel itemListPanel; 
     
     private List<Product> searchedProducts = new ArrayList<>(); //products display to the user to be picked for the order
-    private List<Product> orderProducts = new ArrayList<>(); //products in the order
+    public HashMap<Integer, Product> orderProducts = new HashMap<>(); //products in the order
     
     private ProductSearchTableModel searchTableModel;
     
@@ -234,7 +235,7 @@ public class OrderEditorPanel extends JPanel  {
     }
     
     private Order createOrder() {
-        Product[] prods = orderProducts.toArray(new Product[0]);
+        Product[] prods = orderProducts.values().toArray(new Product[0]);
         
         
         System.out.println(prods.length);
@@ -257,27 +258,29 @@ public class OrderEditorPanel extends JPanel  {
     }
     
     public void addProduct(Product newProduct) {
-        orderProducts.add(newProduct);
-        updateOrderProducts();
-    }
-    
-    public void updateOrderProducts() {
+        newProduct.setQuantity(1);// We only wnt to add 1 of the product to the order, not the maximum number in inventory 
+        orderProducts.put(newProduct.getId(),newProduct);
+        
         itemListPanel.removeAll();
         itemListPanel.revalidate();
         
-        if (this.orderProducts.size() == 0) {
+        if (this.orderProducts.isEmpty()) {
             JLabel noProductsLabel = new JLabel("No products");
             itemListPanel.add(noProductsLabel);
-        } else {           
-        
-            for (Product p : this.orderProducts) {
-                OrderProductItem item = new OrderProductItem(this, p);
-                itemListPanel.add(item);
-            }
+        } else {  
+            renderLineItems();
         }
         
+        System.out.println("Products in order products");
         System.out.println(orderProducts);
-        
-        itemListPanel.repaint();
+        itemListPanel.repaint();   
+    }
+    
+    public void renderLineItems() {
+        this.itemListPanel.removeAll();
+        for (Product p : this.orderProducts.values()) {
+            OrderProductItem item = new OrderProductItem(this, p);
+            this.itemListPanel.add(item);
+        }             
     }
 }

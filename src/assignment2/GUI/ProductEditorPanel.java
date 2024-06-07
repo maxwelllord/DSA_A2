@@ -225,7 +225,7 @@ public class ProductEditorPanel extends JPanel {
 
     public BigDecimal getPrice() {
         System.out.println(priceField);
-        return new BigDecimal(priceField.getText());
+        return new BigDecimal(Double.parseDouble(priceField.getText()));
     }
 
     public int getQuantity() {

@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 /**
  *
  * @author hayae
@@ -24,16 +26,18 @@ import javax.swing.SpinnerNumberModel;
 
 public class OrderProductItem extends JPanel {
     
-    public List<Product> products = new ArrayList<>(); 
-    
     public OrderEditorPanel orderEditorPanel;
     
     private JLabel titleLabel;
     private JSpinner quantitySpinner;
     private JButton deleteButton;
+    
+    private Product product;
 
     public OrderProductItem(OrderEditorPanel orderEditorPanel, Product product) {
+        this.product = product;
         this.orderEditorPanel = orderEditorPanel;
+        
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -44,6 +48,7 @@ public class OrderProductItem extends JPanel {
         // Create the quantity spinner
         SpinnerModel spinnerModel = new SpinnerNumberModel(product.getQuantity(), 0, Integer.MAX_VALUE, 1);
         quantitySpinner = new JSpinner(spinnerModel);
+        addQuantitySpinnerListener(quantitySpinner);
         add(quantitySpinner, BorderLayout.CENTER);
 
         // Create the delete button
@@ -51,9 +56,7 @@ public class OrderProductItem extends JPanel {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Handle the delete action
-                // You can remove this item from the list or perform any other desired action
-                //JOptionPane.showMessageDialog(ItemPanel.this, "Item deleted: " + getTitle());
+                deleteSelf();
             }
         });
         add(deleteButton, BorderLayout.EAST);
@@ -73,5 +76,25 @@ public class OrderProductItem extends JPanel {
 
     public void setQuantity(int quantity) {
         quantitySpinner.setValue(quantity);
+    }
+    
+    private void addQuantitySpinnerListener(JSpinner spinner) {
+        spinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                // Code to be executed when the spinner value changes
+                int quantity = (int) quantitySpinner.getValue();
+                product.setQuantity(quantity);
+                orderEditorPanel.orderProducts.put(product.getId(),product);
+            }
+        });
+    }
+    
+    private void deleteSelf() {
+        System.out.println("Trying to delete " + this.product);
+        orderEditorPanel.orderProducts.remove(product.getId());
+        System.out.println("Products in orderproducts hashmap");
+        System.out.println(orderEditorPanel.orderProducts.values());
+        orderEditorPanel.renderLineItems();
     }
 }
