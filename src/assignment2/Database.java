@@ -12,8 +12,8 @@ import java.sql.*;
 
 
 public class Database {
-    private static final String dburl = "jdbc:derby://localhost:1527/InvDB";
-    private static final String dbuserpass = "pdc";
+    private static final String dbName = "inventoryDB";
+    private static final String connectionUrl = "jdbc:derby:" + dbName + ";";
     
     private Connection connection;
     
@@ -28,10 +28,47 @@ public class Database {
 
     public Database() {
         try {
-            connection = DriverManager.getConnection(dburl, dbuserpass, dbuserpass);
+            connection = DriverManager.getConnection(connectionUrl);
+            
+            //createTables();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void createTables() {
+        String query = "CREATE TABLE products (\n" +
+        "    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
+        "    name VARCHAR(100) NOT NULL,\n" +
+        "    description VARCHAR(500),\n" +
+        "    category VARCHAR(50),\n" +
+        "    price DECIMAL(10, 2) NOT NULL,\n" +
+        "    quantity INT NOT NULL\n" +
+        ")";
+        
+        executeUpdate(query);
+        
+        query = "CREATE TABLE orders (\n" +
+        "   id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
+        "   customer_fname VARCHAR(50) NOT NULL,\n" +
+        "   customer_lname VARCHAR(50) NOT NULL,\n" +
+        "   status VARCHAR(20) NOT NULL,\n" +
+        "   shipping_address VARCHAR(200) NOT NULL,\n" +
+        "   total_price DECIMAL(10, 2) NOT NULL\n" +
+        ")";
+        
+        executeUpdate(query);
+        
+        query = "CREATE TABLE order_items (\n" +
+        "    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
+        "    product_id INT NOT NULL,\n" +
+        "    order_id INT NOT NULL,\n" +
+        "    quantity INT NOT NULL,\n" +
+        "    FOREIGN KEY (product_id) REFERENCES products(id),\n" +
+        "    FOREIGN KEY (order_id) REFERENCES orders(id)\n" +
+        ")";
+        
+        executeUpdate(query);
     }
 
     public void close() {

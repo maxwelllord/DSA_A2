@@ -39,11 +39,4 @@ public class ProductTab extends JPanel {
         
         setVisible(true);
     }
-    
-    public void hideAllPanels() {
-        System.out.println("hiding all panels");
-        this.tablePanel.setVisible(false);
-        this.productEditorPanel.setVisible(false);
-        this.productDisplayPanel.setVisible(false);
-    }   
 }

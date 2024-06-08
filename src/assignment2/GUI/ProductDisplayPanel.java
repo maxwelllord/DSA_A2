@@ -111,8 +111,8 @@ public class ProductDisplayPanel extends JPanel  {
         
         this.backButton = new JButton("Go back");
         backButton.addActionListener(e -> {
-            this.productTab.hideAllPanels();
-            this.productTab.tablePanel.setVisible(true);
+            this.setVisible(false);
+            this.productTab.productEditorPanel.setVisible(true);
         });
 
         gbc.gridx = 0;
@@ -127,7 +127,7 @@ public class ProductDisplayPanel extends JPanel  {
         categoryLabel.setText(product.getCategory());
         priceLabel.setText(String.valueOf(product.getPrice()));
         quantityLabel.setText(String.valueOf(product.getQuantity()));
-        createdAtLabel.setText(product.getCreatedAt().toString());
-        updatedAtLabel.setText(product.getUpdatedAt().toString());
+        //createdAtLabel.setText(product.getCreatedAt().toString());
+        //updatedAtLabel.setText(product.getUpdatedAt().toString());
      }
 }

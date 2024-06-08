@@ -36,12 +36,12 @@ public class ProductEditorPanel extends JPanel {
     private JFormattedTextField priceField;
     private JSpinner quantitySpinner;
     private JButton createButton;
-    private JButton discardButton;
+    private JButton discardButton; 
 
     private MainWindow gui;
     private ProductTab productTab;
     
-    private boolean isEditing = false;
+    public boolean isEditing = false;
     
 
     public ProductEditorPanel(MainWindow gui, ProductTab productTab) {
@@ -158,11 +158,10 @@ public class ProductEditorPanel extends JPanel {
         });
 
         //Create button
-        discardButton = new JButton("Discard");
+        discardButton = new JButton("Discard changes");
         discardButton.addActionListener(e -> {
-            resetFields();   
-            productTab.hideAllPanels();
-            productTab.tablePanel.setVisible(true);
+            resetFields();
+            productTab.productEditorPanel.setEditingFalse();
         });
 
 
@@ -230,5 +229,15 @@ public class ProductEditorPanel extends JPanel {
 
     public int getQuantity() {
         return (int) quantitySpinner.getValue();
+    }
+    
+    public void setEditingTrue() {
+        this.isEditing = true;
+        this.createButton.setText("Update");
+    }
+    
+    public void setEditingFalse() {
+        this.isEditing = false;
+        this.createButton.setText("Create");
     }
 }
