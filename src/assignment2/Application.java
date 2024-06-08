@@ -180,7 +180,13 @@ public class Application {
     }
     
     public Product[] loadProductsFromOrder(int orderId) {
-        return null;
+        List<Product> orderItems = new ArrayList<>();
+
+        String query = "SELECT p.* FROM PRODUCTS p " +
+                             "JOIN ORDER_ITEMS oi ON p.PRODUCT_ID = oi.PRODUCT_ID " +
+                             "WHERE oi.ORDER_ID = ?";
+        
+        return resultSetToProducts(this.db.executeQuery(query)).toArray(Product[]::new);
     }
     
     public Product getProductById(int id) {
