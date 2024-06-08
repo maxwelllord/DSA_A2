@@ -275,6 +275,17 @@ public class OrderEditorPanel extends JPanel  {
         );
     }
     
+    private void loadOrder(Order order) {
+        firstName.setText(order.getCustomerFName());    
+        lastName.setText(order.getCustomerLName());    
+        orderShippingAddress.setText(order.getShippingAddress());
+        
+        orderStatus.setSelectedItem(order.getStatus());
+        totalPriceValue.setText(order.getTotalPrice().toString());
+        
+        //Load the products
+    }
+    
     private void resetFields() {
         
     }

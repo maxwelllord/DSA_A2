@@ -14,7 +14,7 @@ import javax.swing.JPanel;
  */
 public class OrderTab extends JPanel {
     
-    private OrderTableModel orderTable;
+    public OrderTableModel orderTable;
     public JPanel tableContainer;
     public JPanel tablePanel;
     private OrderEditorPanel orderEditorPanel;
@@ -31,8 +31,5 @@ public class OrderTab extends JPanel {
         add(orderEditorPanel);
         
         setVisible(true);
-    }
-    
-    
-    
+    }    
 }

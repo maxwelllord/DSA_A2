@@ -23,7 +23,7 @@ import javax.swing.table.AbstractTableModel;
  */
 
 public class ProductTableModel extends AbstractTableModel {
-    private final String[] columnNames = {"Item", "Quantity", "Price"};
+    private final String[] columnNames = {"Item", "Quantity", "Price", "ID"};
     private List<Product> products;
     private MainWindow gui;
     private ProductTab productTab;
@@ -54,6 +54,7 @@ public class ProductTableModel extends AbstractTableModel {
     }
 
     public void updateTable(List<Product> products) {
+        System.out.println(products);
         this.products = products;        
         fireTableDataChanged();
     }
@@ -82,7 +83,9 @@ public class ProductTableModel extends AbstractTableModel {
             case 1:
                 return product.getQuantity();
             case 2:
-                return product.getPrice();
+                return "$ " + product.getPrice();
+            case 3:
+                return product.getId();
             default:
                 return null;
         }
@@ -120,10 +123,9 @@ public class ProductTableModel extends AbstractTableModel {
                         // Handle double click event on the row
                         // Perform desired action with the double-clicked product
                         System.out.println("Attempting to load product Id:" + products.get(rowIndex).getId());
-                        productTab.productEditorPanel.loadProduct(products.get(rowIndex).getId());
+                        productTab.productEditorPanel.loadProduct(rowIndex, products.get(rowIndex).getId());
                         productTab.productEditorPanel.setVisible(true);
                         productTab.productDisplayPanel.setVisible(false);
-                        productTab.productEditorPanel.setEditingFalse();
                     }
                 }
             }

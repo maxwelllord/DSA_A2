@@ -36,14 +36,16 @@ public class ProductEditorPanel extends JPanel {
     private JFormattedTextField priceField;
     private JSpinner quantitySpinner;
     private JButton createButton;
-    private JButton discardButton; 
+    private JButton discardButton;
+    
+    private JLabel panelHeader = new JLabel("Creating a new product");
 
     private MainWindow gui;
     private ProductTab productTab;
     
-    public boolean isEditing = false;
+    public int indexUpdating = -1;
+    private Product product; //the product being edited
     
-
     public ProductEditorPanel(MainWindow gui, ProductTab productTab) {
         this.gui = gui;
         this.productTab = productTab;
@@ -51,46 +53,61 @@ public class ProductEditorPanel extends JPanel {
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 5, 5);
+        
+        int yPos = 0;
+
+        // Header
+        constraints.gridx = 1;
+        constraints.gridy = yPos;
+        add(panelHeader, constraints);
+        
+        yPos++;
 
         // Title
         JLabel titleLabel = new JLabel("Title:");
         constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridy = yPos;
         add(titleLabel, constraints);
 
         titleField = new JTextField(20);
         constraints.gridx = 1;
-        constraints.gridy = 0;
+        constraints.gridy = yPos;
         add(titleField, constraints);
-
+        
+        yPos++;
+        
         // Description
         JLabel descriptionLabel = new JLabel("Description:");
         constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridy = yPos;
         add(descriptionLabel, constraints);
 
         descriptionArea = new JTextArea(4, 20);
         descriptionArea.setLineWrap(true);
         JScrollPane scrollPane = new JScrollPane(descriptionArea);
         constraints.gridx = 1;
-        constraints.gridy = 1;
+        constraints.gridy = yPos;
         add(scrollPane, constraints);
+        
+        yPos++;
 
         // Category
         JLabel categoryLabel = new JLabel("Category:");
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = yPos;
         add(categoryLabel, constraints);
 
         categoryComboBox = new JTextField(20);
         constraints.gridx = 1;
-        constraints.gridy = 2;
+        constraints.gridy = yPos;
         add(categoryComboBox, constraints);
+        
+        yPos++;
 
         // Price
         JLabel priceLabel = new JLabel("Price:");
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = yPos;
         add(priceLabel, constraints);
 
         NumberFormat numberFormat = NumberFormat.getNumberInstance();
@@ -136,25 +153,35 @@ public class ProductEditorPanel extends JPanel {
 
         priceField.setColumns(10);
         constraints.gridx = 1;
-        constraints.gridy = 3;
+        constraints.gridy = yPos;
         add(priceField, constraints);
+        
+        yPos++;
 
         // Quantity
         JLabel quantityLabel = new JLabel("Quantity:");
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = yPos;
         add(quantityLabel, constraints);
 
         //spinner
         quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         constraints.gridx = 1;
-        constraints.gridy = 4;
+        constraints.gridy = yPos;
         add(quantitySpinner, constraints);
+        
+        
+        yPos++;
 
         //Create button
         createButton = new JButton("Create");
         createButton.addActionListener(e -> {
-            gui.app.createProduct(createProduct());                
+                Product newOrChangedProduct = createProduct();
+            if (this.indexUpdating > -1) {
+                gui.app.updateProduct(this.indexUpdating,newOrChangedProduct );                    
+            } else {         
+                gui.app.createProduct(newOrChangedProduct);      
+            }             
         });
 
         //Create button
@@ -166,12 +193,12 @@ public class ProductEditorPanel extends JPanel {
 
 
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = yPos;
         add(createButton, constraints);
 
 
         constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridy = yPos;
         add(discardButton, constraints);
 
         this.priceField = priceField;
@@ -186,27 +213,37 @@ public class ProductEditorPanel extends JPanel {
         String cat = getCategory();
         BigDecimal price = getPrice();
         int quant = getQuantity();
+        int id = this.product == null ? -1 : this.product.getId();
 
-        return new Product(-1, title, desc, cat, price, quant);
+        return new Product(id, title, desc, cat, price, quant);
     }
 
     //load product for editing
-    public void loadProduct(int productId) {
-        Product p = gui.app.getProductById(productId);
+    public void loadProduct(int rowIndex, int productId) {
+        this.indexUpdating = rowIndex; // Pass the row index of the product being updated, so if it is updated we can just adjust one product rather than querying the DB again
+        this.product = gui.app.getProductById(productId);
+        
+        System.out.println(this.product);
 
-        titleField.setText(p.getTitle());
-        descriptionArea.setText(p.getDescription());
-        categoryComboBox.setText(p.getCategory());
-        priceField.setValue(p.getPrice());
-        quantitySpinner.setValue(p.getQuantity());
+        titleField.setText(this.product.getTitle());
+        descriptionArea.setText(this.product.getDescription());
+        categoryComboBox.setText(this.product.getCategory());
+        priceField.setValue(this.product.getPrice());
+        quantitySpinner.setValue(this.product.getQuantity());
+        
+        this.createButton.setText("Update");
+        panelHeader.setText("Editing product \"" + this.product.getTitle() + "\"");
     }
 
-    public void resetFields() {            
+    public void resetFields() {    
+        this.indexUpdating = -1;
+        this.product = null;
         titleField.setText("");
         descriptionArea.setText("");
         categoryComboBox.setText("");
         priceField.setValue(BigDecimal.ZERO);
         quantitySpinner.setValue(0);
+        panelHeader.setText("Creating a new product");
     }
 
     // Getter methods for retrieving the entered data
@@ -223,7 +260,6 @@ public class ProductEditorPanel extends JPanel {
     }
 
     public BigDecimal getPrice() {
-        System.out.println(priceField);
         return new BigDecimal(Double.parseDouble(priceField.getText()));
     }
 
@@ -231,13 +267,7 @@ public class ProductEditorPanel extends JPanel {
         return (int) quantitySpinner.getValue();
     }
     
-    public void setEditingTrue() {
-        this.isEditing = true;
-        this.createButton.setText("Update");
-    }
-    
     public void setEditingFalse() {
-        this.isEditing = false;
         this.createButton.setText("Create");
     }
 }

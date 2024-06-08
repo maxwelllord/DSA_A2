@@ -20,7 +20,6 @@ import java.util.List;
 public class Application {
     
     public List<Product> products = new ArrayList<>();    
-    private List<Customer> customers = new ArrayList<>();    
     private List<Order> orders = new ArrayList<>();
     
     Database db;
@@ -86,11 +85,8 @@ public class Application {
 
             BigDecimal price = rs.getBigDecimal("price");
             int quant = rs.getInt("quantity");
-            Timestamp created = rs.getTimestamp("created_at");
-            Timestamp updated = rs.getTimestamp("updated_at");
-            //Timestamp updated = rs.getTimestamp("updated_at");
 
-            return new Product(id, name, desc, cat, price, quant, created, updated);     
+            return new Product(id, name, desc, cat, price, quant);     
         }catch (Exception e) {
             e.printStackTrace();
         }   
@@ -108,10 +104,8 @@ public class Application {
             OrderStatus status = Order.OrderStatus.valueOf(rs.getString("status").toUpperCase());
 
             BigDecimal price = rs.getBigDecimal("total_price");
-            Timestamp created = rs.getTimestamp("created_at");
-            Timestamp updated = rs.getTimestamp("updated_at");
 
-            return new Order(id, fname, lname, null, ship_address, status, price,created, updated);     
+            return new Order(id, fname, lname, null, ship_address, status, price);     
         }catch (Exception e) {
             e.printStackTrace();
         }   
@@ -120,14 +114,33 @@ public class Application {
     }
     
     public void createProduct(Product newProduct) {
-        //title desc cat price quant
+        System.out.println("Creating " + newProduct);
+        
         String query = "INSERT INTO PRODUCTS (NAME, DESCRIPTION, CATEGORY, PRICE, QUANTITY)\n" +
             "VALUES ('" + newProduct.getTitle() + "', '" + newProduct.getDescription() + "', '" +
             newProduct.getCategory() + "', " + newProduct.getPrice() + ", " +
             newProduct.getQuantity() + ")";
+        
         this.db.executeUpdate(query);
         
         products.add(newProduct);
+        this.gui.productTab.productTable.updateTable(products);
+    }
+    
+    public void updateProduct(int rowIndex, Product updatedProduct) {
+        System.out.println("Updating the product " + updatedProduct.getId());
+        
+        String query = "UPDATE PRODUCTS SET " +
+            "NAME = '" + updatedProduct.getTitle() + "', " +
+            "DESCRIPTION = '" + updatedProduct.getDescription() + "', " +
+            "CATEGORY = '" + updatedProduct.getCategory() + "', " +
+            "PRICE = " + updatedProduct.getPrice() + ", " +
+            "QUANTITY = " + updatedProduct.getQuantity() + " " +
+            "WHERE ID = " + updatedProduct.getId();
+        
+        this.db.executeUpdateWithGeneratedKey(query);
+        
+        products.set(rowIndex, updatedProduct);
         this.gui.productTab.productTable.updateTable(products);
     }
     
@@ -163,9 +176,11 @@ public class Application {
         this.db.executeUpdate(orderItemsQuery);
         
         orders.add(newOrder); //add the order to the order table
-        
-        //this.gui.productTab.productTable.updateTable(products);
-        
+        this.gui.orderTab.orderTable.fireTableDataChanged();        
+    }
+    
+    public Product[] loadProductsFromOrder(int orderId) {
+        return null;
     }
     
     public Product getProductById(int id) {

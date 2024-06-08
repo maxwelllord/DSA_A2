@@ -26,7 +26,7 @@ public class ProductTab extends JPanel {
         this.productTable = new ProductTableModel(app.products, gui, this);
         this.tablePanel = productTable.getTablePanel();
         
-        this.productDisplayPanel = new ProductDisplayPanel(gui, this);
+        this.productDisplayPanel = new ProductDisplayPanel(this);
         this.productDisplayPanel.setVisible(false);
         
         ProductEditorPanel pP = new ProductEditorPanel(gui, this);

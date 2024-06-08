@@ -26,9 +26,6 @@ public class Order {
     private OrderStatus status;
     private BigDecimal totalPrice;
     
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    
     public enum OrderStatus {
         DRAFT("Draft"),
         PROCESSING("Paid"),
@@ -58,7 +55,7 @@ public class Order {
     }
 
     // Constructor
-    public Order(int id, String customerFName, String customerLName, Product[] products, String shippingAddress, OrderStatus status, BigDecimal totalPrice, Timestamp createdAt, Timestamp updatedAt) {
+    public Order(int id, String customerFName, String customerLName, Product[] products, String shippingAddress, OrderStatus status, BigDecimal totalPrice) {
         this.id = id;
         this.customerFName = customerFName;
         this.customerLName = customerLName;
@@ -66,8 +63,6 @@ public class Order {
         this.shippingAddress = shippingAddress;
         this.status = status;
         this.totalPrice = totalPrice;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -126,13 +121,5 @@ public class Order {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
     }
 }

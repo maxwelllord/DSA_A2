@@ -17,8 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ProductDisplayPanel extends JPanel  {
-    
-    private final MainWindow gui;
     private ProductTab productTab;
     
     //display fields
@@ -28,13 +26,10 @@ public class ProductDisplayPanel extends JPanel  {
     private JLabel categoryLabel;
     private JLabel priceLabel;
     private JLabel quantityLabel;
-    private JLabel createdAtLabel;
-    private JLabel updatedAtLabel;
     
     private JButton backButton;
 
-    public ProductDisplayPanel(MainWindow gui, ProductTab productTab) {
-        this.gui = gui;
+    public ProductDisplayPanel(ProductTab productTab) {
         this.productTab = productTab;
         initComponents();
     }
@@ -92,22 +87,6 @@ public class ProductDisplayPanel extends JPanel  {
         gbc.gridx = 1;
         quantityLabel = new JLabel();
         add(quantityLabel, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        add(new JLabel("Created At:"), gbc);
-
-        gbc.gridx = 1;
-        createdAtLabel = new JLabel();
-        add(createdAtLabel, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        add(new JLabel("Updated At:"), gbc);
-
-        gbc.gridx = 1;
-        updatedAtLabel = new JLabel();
-        add(updatedAtLabel, gbc);
         
         this.backButton = new JButton("Go back");
         backButton.addActionListener(e -> {
@@ -115,8 +94,8 @@ public class ProductDisplayPanel extends JPanel  {
             this.productTab.productEditorPanel.setVisible(true);
         });
 
-        gbc.gridx = 0;
-        gbc.gridy = 8;
+        gbc.gridx = 1;
+        gbc.gridy = 6;
         add(backButton);
     }
 
@@ -127,7 +106,5 @@ public class ProductDisplayPanel extends JPanel  {
         categoryLabel.setText(product.getCategory());
         priceLabel.setText(String.valueOf(product.getPrice()));
         quantityLabel.setText(String.valueOf(product.getQuantity()));
-        //createdAtLabel.setText(product.getCreatedAt().toString());
-        //updatedAtLabel.setText(product.getUpdatedAt().toString());
      }
 }
