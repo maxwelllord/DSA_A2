@@ -13,6 +13,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +23,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 /**
  *
@@ -35,6 +38,7 @@ public class OrderEditorPanel extends JPanel  {
     private JTextField lastName;
     private JTextField orderShippingAddress;
     private JComboBox orderStatus;
+    JLabel totalPriceValue;
 
     JTextField productSearchField;       
     JPanel itemListPanel; 
@@ -64,6 +68,7 @@ public class OrderEditorPanel extends JPanel  {
         JLabel firstnameLabel = new JLabel("First Name:");
         gbc.gridx = 0;
         gbc.gridy = yPos;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 5, 5, 5);
         add(firstnameLabel, gbc);
@@ -72,7 +77,6 @@ public class OrderEditorPanel extends JPanel  {
         firstName = new JTextField(20);
         gbc.gridx = 1;
         gbc.gridy = yPos;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         add(firstName, gbc);
         
         yPos++;
@@ -81,7 +85,6 @@ public class OrderEditorPanel extends JPanel  {
         JLabel lastNameLabel = new JLabel("Last Name:");
         gbc.gridx = 0;
         gbc.gridy = yPos;
-        gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 5, 5, 5);
         add(lastNameLabel, gbc);
 
@@ -89,7 +92,6 @@ public class OrderEditorPanel extends JPanel  {
         lastName = new JTextField(20);
         gbc.gridx = 1;
         gbc.gridy = yPos;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         add(lastName, gbc);
         
         yPos++;
@@ -108,7 +110,6 @@ public class OrderEditorPanel extends JPanel  {
         orderStatus = new JComboBox<>(orderStatuses);
         gbc.gridx = 1;
         gbc.gridy = yPos;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         add(orderStatus, gbc);
         
         yPos++;
@@ -124,8 +125,18 @@ public class OrderEditorPanel extends JPanel  {
         orderShippingAddress = new JTextField(20);
         gbc.gridx = 1;
         gbc.gridy = yPos;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         add(orderShippingAddress, gbc);
+        
+        yPos++;
+        
+        // SPLITTER ENDING CUSTOMER DATA
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        
+        gbc.gridx = 0;
+        gbc.gridy = yPos;
+        gbc.anchor = GridBagConstraints.CENTER;
+        //gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(separator, gbc);
         
         yPos++;
             
@@ -198,13 +209,19 @@ public class OrderEditorPanel extends JPanel  {
         gbc.fill = GridBagConstraints.BOTH;
         add(itemListPanel,gbc); 
         yPos++;
-            
-        // ORDER TOTAL PRICE
+        
+        // ORDER TOTAL 
         JLabel totalPriceLabel = new JLabel("TOTAL PRICE:");
         gbc.gridx = 0;
-        gbc.gridy = yPos;
-        gbc.anchor = GridBagConstraints.WEST;        
+        gbc.gridy = yPos;    
         add(totalPriceLabel, gbc);
+        
+        // TOTAL PRICE VALUE
+        
+        totalPriceValue = new JLabel("$ 0.00");
+        gbc.gridx = 1;
+        gbc.gridy = yPos;  
+        add(totalPriceValue, gbc);
         
         yPos++;
 
@@ -237,12 +254,15 @@ public class OrderEditorPanel extends JPanel  {
     private Order createOrder() {
         Product[] prods = orderProducts.values().toArray(new Product[0]);
         
-        
-        System.out.println(prods.length);
-        
         if (prods.length == 0) {
             System.out.println("Order needs at least one product");
             return null;
+        }
+        
+        BigDecimal totalPrice = new BigDecimal(0.0);
+        
+        for (Product p: prods) {
+            totalPrice = totalPrice.add(p.getPrice());
         }
         
         return new Order(
@@ -250,16 +270,24 @@ public class OrderEditorPanel extends JPanel  {
             this.lastName.getText(),
             prods,
             this.orderShippingAddress.getText(),
-            (Order.OrderStatus) this.orderStatus.getSelectedItem());
+            (Order.OrderStatus) this.orderStatus.getSelectedItem(),
+            totalPrice
+        );
     }
     
     private void resetFields() {
         
     }
     
+    public void removeProduct(int productId) {
+        System.out.println("Trying to delete " + productId);
+        this.orderProducts.remove(productId);
+        renderLineItems();
+        
+    }
+    
     public void addProduct(Product newProduct) {
-        newProduct.setQuantity(1);// We only wnt to add 1 of the product to the order, not the maximum number in inventory 
-        orderProducts.put(newProduct.getId(),newProduct);
+        orderProducts.put(newProduct.getId(),new Product(newProduct));
         
         itemListPanel.removeAll();
         itemListPanel.revalidate();
@@ -278,9 +306,14 @@ public class OrderEditorPanel extends JPanel  {
     
     public void renderLineItems() {
         this.itemListPanel.removeAll();
+        BigDecimal totalPrice = new BigDecimal(0);
         for (Product p : this.orderProducts.values()) {
+            System.out.println(p.getPrice());
+            totalPrice = totalPrice.add(p.getPrice());
             OrderProductItem item = new OrderProductItem(this, p);
             this.itemListPanel.add(item);
-        }             
+        }
+        totalPriceValue.setText("$ " + totalPrice);
+        
     }
 }

@@ -8,19 +8,24 @@ package assignment2;
  *
  * @author hayae
  */
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Order {
+
+    static String OrderStatus(String string) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     private int id;
     
     private String customerFName;
     private String customerLName;
     
     private String shippingAddress;
-    
-    private Timestamp orderDate;
     private Product[] lineItems;
     private OrderStatus status;
+    private BigDecimal totalPrice;
+    
     private Timestamp createdAt;
     private Timestamp updatedAt;
     
@@ -43,12 +48,26 @@ public class Order {
     }
 
     // Constructor
-    public Order(String customerFName, String customerLName, Product[] products, String shippingAddress, OrderStatus status) {
+    public Order(String customerFName, String customerLName, Product[] products, String shippingAddress, OrderStatus status, BigDecimal totalPrice) {
         this.customerFName = customerFName;
         this.customerLName = customerLName;
         this.lineItems = products;
         this.shippingAddress = shippingAddress;
         this.status = status;
+        this.totalPrice = totalPrice;
+    }
+
+    // Constructor
+    public Order(int id, String customerFName, String customerLName, Product[] products, String shippingAddress, OrderStatus status, BigDecimal totalPrice, Timestamp createdAt, Timestamp updatedAt) {
+        this.id = id;
+        this.customerFName = customerFName;
+        this.customerLName = customerLName;
+        this.lineItems = products;
+        this.shippingAddress = shippingAddress;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -75,14 +94,6 @@ public class Order {
     public void setCustomerLName(String customerLName) {
         this.customerLName = customerLName;
     }
-
-    public Timestamp getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(Timestamp orderDate) {
-        this.orderDate = orderDate;
-    }
     
     //For updating the products in an order
     public void setLineItems(Product[] products) {
@@ -107,6 +118,14 @@ public class Order {
 
     public void setShippingAddress(String shippingAddress) {
         this.shippingAddress = shippingAddress;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public Timestamp getCreatedAt() {

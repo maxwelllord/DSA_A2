@@ -6,6 +6,10 @@ package assignment2.GUI;
 
 import assignment2.Product;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -43,23 +47,49 @@ public class OrderProductItem extends JPanel {
 
         // Create the title label
         titleLabel = new JLabel(product.getTitle());
-        add(titleLabel, BorderLayout.WEST);
+        
+        JLabel priceLabel = new JLabel("$ " + product.getPrice().toString());
 
         // Create the quantity spinner
         SpinnerModel spinnerModel = new SpinnerNumberModel(product.getQuantity(), 0, Integer.MAX_VALUE, 1);
         quantitySpinner = new JSpinner(spinnerModel);
+        quantitySpinner.setPreferredSize(new Dimension(60, quantitySpinner.getPreferredSize().height));
         addQuantitySpinnerListener(quantitySpinner);
-        add(quantitySpinner, BorderLayout.CENTER);
 
         // Create the delete button
         deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                deleteSelf();
+                orderEditorPanel.removeProduct(product.getId());
             }
         });
-        add(deleteButton, BorderLayout.EAST);
+        
+        JPanel row = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 0, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        row.add(titleLabel, gbc);
+        
+        gbc.gridx = 1;
+        gbc.weightx = 0.0;
+        row.add(deleteButton, gbc);
+
+        gbc.gridx = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(5, 5, 5, 0);
+
+        row.add(quantitySpinner, gbc);
+        gbc.gridx = 3;        
+        row.add(priceLabel, gbc);
+
+        add(row, BorderLayout.CENTER);
+
     }
 
     public String getTitle() {
@@ -88,13 +118,5 @@ public class OrderProductItem extends JPanel {
                 orderEditorPanel.orderProducts.put(product.getId(),product);
             }
         });
-    }
-    
-    private void deleteSelf() {
-        System.out.println("Trying to delete " + this.product);
-        orderEditorPanel.orderProducts.remove(product.getId());
-        System.out.println("Products in orderproducts hashmap");
-        System.out.println(orderEditorPanel.orderProducts.values());
-        orderEditorPanel.renderLineItems();
     }
 }

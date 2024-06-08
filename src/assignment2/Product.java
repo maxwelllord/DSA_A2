@@ -37,7 +37,19 @@ public class Product {
         this.quantity = quantity;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-    }  
+    }
+    
+    // For creating a product to add to an order
+    public Product(Product other) {
+        this.id = other.id;
+        this.title = other.title;
+        this.description = other.description;
+        this.category = other.category;
+        this.price = other.price;
+        this.quantity = 1;
+        this.createdAt = other.createdAt;
+        this.updatedAt = other.updatedAt;
+    }
 
     public String getTitle() {
         return title;

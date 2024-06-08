@@ -6,6 +6,7 @@ package assignment2;
 
 
 import assignment2.GUI.MainWindow;
+import assignment2.Order.OrderStatus;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -29,8 +30,11 @@ public class Application {
         
         Database db = new Database();
         
-        Application app = new Application(db);        
-        app.products = app.resultSetToProducts(db.getProducts());    
+        Application app = new Application(db);       
+        
+        app.products = app.resultSetToProducts(db.getProducts());
+        app.orders = app.resultSetToOrders(db.getOrders());
+        
         MainWindow gui = new MainWindow(app);
         app.gui = gui;
         gui.setVisible(true);
@@ -49,6 +53,21 @@ public class Application {
         
             while (rs.next()) {
                 temp.add(rsToProduct(rs));                
+            }            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }  
+        
+        return temp;
+    }
+    
+    // Unpack RS into Orders
+    public List<Order> resultSetToOrders(ResultSet rs) {
+        List<Order> temp = new ArrayList<>();  
+        try {
+        
+            while (rs.next()) {
+                temp.add(rsToOrder(rs));                
             }            
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,6 +98,27 @@ public class Application {
         return null;
     }
     
+    public Order rsToOrder(ResultSet rs) {
+        
+        try {
+            int id = rs.getInt("id");
+            String fname = rs.getString("customer_fname");
+            String lname = rs.getString("customer_lname");
+            String ship_address = rs.getString("shipping_address");
+            OrderStatus status = Order.OrderStatus.valueOf(rs.getString("status").toUpperCase());
+
+            BigDecimal price = rs.getBigDecimal("total_price");
+            Timestamp created = rs.getTimestamp("created_at");
+            Timestamp updated = rs.getTimestamp("updated_at");
+
+            return new Order(id, fname, lname, null, ship_address, status, price,created, updated);     
+        }catch (Exception e) {
+            e.printStackTrace();
+        }   
+        
+        return null;        
+    }
+    
     public void createProduct(Product newProduct) {
         //title desc cat price quant
         String query = "INSERT INTO PRODUCTS (NAME, DESCRIPTION, CATEGORY, PRICE, QUANTITY)\n" +
@@ -93,12 +133,13 @@ public class Application {
     
     public void createOrder(Order newOrder) {
         
-        String query = "INSERT INTO ORDERS (CUSTOMER_FNAME, CUSTOMER_LNAME, STATUS, SHIPPING_ADDRESS)\n" +
+        String query = "INSERT INTO ORDERS (CUSTOMER_FNAME, CUSTOMER_LNAME, STATUS, SHIPPING_ADDRESS, TOTAL_PRICE)\n" +
             "VALUES ('" +
                 newOrder.getCustomerFName() + "', '" +
                 newOrder.getCustomerLName() + "', '" +
                 newOrder.getStatus() + "', '" +
-                newOrder.getShippingAddress() + "')";
+                newOrder.getShippingAddress() + "'," +
+                newOrder.getTotalPrice() + ")";
         
         int orderId = this.db.executeUpdateWithGeneratedKey(query);
         
@@ -140,6 +181,10 @@ public class Application {
         }     
         
         return null;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
     }
     
     public void printProducts() {

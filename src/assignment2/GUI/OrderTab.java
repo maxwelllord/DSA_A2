@@ -14,6 +14,9 @@ import javax.swing.JPanel;
  */
 public class OrderTab extends JPanel {
     
+    private OrderTableModel orderTable;
+    public JPanel tableContainer;
+    public JPanel tablePanel;
     private OrderEditorPanel orderEditorPanel;
     public MainWindow gui;
     
@@ -22,6 +25,9 @@ public class OrderTab extends JPanel {
         this.orderEditorPanel = new OrderEditorPanel(app,this);
         orderEditorPanel.setVisible(true);
         
+        this.orderTable = new OrderTableModel(orderEditorPanel, app.getOrders());
+        
+        add(this.orderTable.tablePanel);
         add(orderEditorPanel);
         
         setVisible(true);
