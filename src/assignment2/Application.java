@@ -120,10 +120,13 @@ public class Application {
             newProduct.getCategory() + "', " + newProduct.getPrice() + ", " +
             newProduct.getQuantity() + ")";
         
+        // Grab the created id for our new product
         int productId = this.db.executeUpdateWithGeneratedKey(query);
         
+        //Set it to our passed object
         newProduct.setId(productId);
         
+        //Add the product back to our app's lisst of products and the product table
         products.add(newProduct);
         this.gui.productTab.productTable.updateTable(products);
     }

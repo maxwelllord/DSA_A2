@@ -165,7 +165,7 @@ public class ProductEditorPanel extends JPanel {
         add(quantityLabel, constraints);
 
         //spinner
-        quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        quantitySpinner = new JSpinner(new SpinnerNumberModel(1, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
         constraints.gridx = 1;
         constraints.gridy = yPos;
         add(quantitySpinner, constraints);

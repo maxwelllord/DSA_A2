@@ -63,6 +63,8 @@ public class OrderEditorPanel extends JPanel  {
         this.app = app;
         this.orderTab = orderTab;
         initComponents();
+        
+        updateSearchedProducts();
     }
 
     private void initComponents() {
@@ -167,17 +169,7 @@ public class OrderEditorPanel extends JPanel  {
         productSearchField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String searchText = productSearchField.getText();
-                // Perform actions with the search text
-                System.out.println("Search text: " + searchText);
-                
-                if (searchText.equals("")) {
-                    // Blank the table if there is no search query                    
-                    searchTableModel.setProducts(new ArrayList<>());
-                    return;
-                }
-                
-                searchTableModel.setProducts(app.getProductsByTitle(searchText));
+                updateSearchedProducts();
             }
         });
         add(productSearchField, gbc);
@@ -373,5 +365,19 @@ public class OrderEditorPanel extends JPanel  {
         itemListPanel.revalidate();
         itemListPanel.repaint();
         
+    }
+    
+    public void updateSearchedProducts() {
+        String searchText = productSearchField.getText();
+        // Perform actions with the search text
+        System.out.println("Search text: " + searchText);
+
+        if (searchText.equals("")) {
+            // Blank the table if there is no search query                    
+            searchTableModel.setProducts(app.getProducts());
+            return;
+        }
+
+        searchTableModel.setProducts(app.getProductsByTitle(searchText));        
     }
 }
