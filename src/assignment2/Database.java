@@ -28,38 +28,65 @@ public class Database {
     }
     
     public void createTables() {
-        String query = "CREATE TABLE products (\n" +
-        "    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
-        "    name VARCHAR(100) NOT NULL,\n" +
-        "    description VARCHAR(500),\n" +
-        "    category VARCHAR(50),\n" +
-        "    price DECIMAL(10, 2) NOT NULL,\n" +
-        "    quantity INT NOT NULL\n" +
-        ")";
+        String query;
         
-        executeUpdate(query);
+        if (!tableExists("products")) {
+            query = "CREATE TABLE products (\n" +
+            "    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
+            "    name VARCHAR(100) NOT NULL,\n" +
+            "    description VARCHAR(500),\n" +
+            "    category VARCHAR(50),\n" +
+            "    price DECIMAL(10, 2) NOT NULL,\n" +
+            "    quantity INT NOT NULL\n" +
+            ")";
+
+            executeUpdate(query);            
+        }
         
-        query = "CREATE TABLE orders (\n" +
-        "   id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
-        "   customer_fname VARCHAR(50) NOT NULL,\n" +
-        "   customer_lname VARCHAR(50) NOT NULL,\n" +
-        "   status VARCHAR(20) NOT NULL,\n" +
-        "   shipping_address VARCHAR(200) NOT NULL,\n" +
-        "   total_price DECIMAL(10, 2) NOT NULL\n" +
-        ")";
+        if (!tableExists("orders")) {        
+            query = "CREATE TABLE orders (\n" +
+            "   id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
+            "   customer_fname VARCHAR(50) NOT NULL,\n" +
+            "   customer_lname VARCHAR(50) NOT NULL,\n" +
+            "   status VARCHAR(20) NOT NULL,\n" +
+            "   shipping_address VARCHAR(200) NOT NULL,\n" +
+            "   total_price DECIMAL(10, 2) NOT NULL\n" +
+            ")";
         
-        executeUpdate(query);
+            executeUpdate(query);
+        }
         
-        query = "CREATE TABLE order_items (\n" +
-        "    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
-        "    product_id INT NOT NULL,\n" +
-        "    order_id INT NOT NULL,\n" +
-        "    quantity INT NOT NULL,\n" +
-        "    FOREIGN KEY (product_id) REFERENCES products(id),\n" +
-        "    FOREIGN KEY (order_id) REFERENCES orders(id)\n" +
-        ")";
-        
-        executeUpdate(query);
+        if (!tableExists("order_items")) {   
+
+            query = "CREATE TABLE order_items (\n" +
+            "    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n" +
+            "    product_id INT NOT NULL,\n" +
+            "    order_id INT NOT NULL,\n" +
+            "    quantity INT NOT NULL,\n" +
+            "    FOREIGN KEY (product_id) REFERENCES products(id),\n" +
+            "    FOREIGN KEY (order_id) REFERENCES orders(id)\n" +
+            ")";
+
+            executeUpdate(query);
+        }
+    }
+    
+    public boolean tableExists(String tableName) {
+        try {
+            // Get the database metadata
+            DatabaseMetaData metadata = connection.getMetaData();
+
+            // Check if the table exists
+            ResultSet resultSet = metadata.getTables(null, null, tableName.toUpperCase(), new String[] {"TABLE"});
+
+            boolean exists = resultSet.next();
+            resultSet.close();
+
+            return exists;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public void close() {

@@ -26,7 +26,6 @@ import javax.swing.table.AbstractTableModel;
 public class ProductTableModel extends AbstractTableModel {
     private final String[] columnNames = {"Item", "Quantity", "Price", "ID"};
     private List<Product> products;
-    private MainWindow gui;
     private ProductTab productTab;
     
     private JPanel tablePanel;
@@ -34,9 +33,8 @@ public class ProductTableModel extends AbstractTableModel {
     private final int DOUBLE_CLICK_DELAY = 200; //ideally this would be derived from the system
     private Timer singleClickTimer;
 
-    public ProductTableModel(List<Product> products, MainWindow gui, ProductTab productTab) {
+    public ProductTableModel(List<Product> products, ProductTab productTab) {
         this.products = products;
-        this.gui = gui;
         this.productTab = productTab;
 
         JTable table = new JTable(this);        

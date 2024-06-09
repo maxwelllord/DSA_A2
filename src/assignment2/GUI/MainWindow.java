@@ -31,7 +31,7 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(400, 300));
         
-        productTab = new ProductTab(app, this);
+        productTab = new ProductTab(app);
         orderTab = new OrderTab(app);
         
         JTabbedPane tabbedPane = new JTabbedPane();

@@ -63,8 +63,6 @@ public class OrderEditorPanel extends JPanel  {
         this.app = app;
         this.orderTab = orderTab;
         initComponents();
-        
-        updateSearchedProducts();
     }
 
     private void initComponents() {
@@ -255,6 +253,8 @@ public class OrderEditorPanel extends JPanel  {
         gbc.gridx = 1;
         gbc.gridy = yPos;
         add(discardButton, gbc);
+        
+        updateSearchedProducts();
     }
     
     private Order createOrder() {

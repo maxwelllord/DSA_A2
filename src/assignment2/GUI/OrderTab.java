@@ -18,7 +18,6 @@ public class OrderTab extends JPanel {
     public JPanel tableContainer;
     public JPanel tablePanel;
     private OrderEditorPanel orderEditorPanel;
-    public MainWindow gui;
     
     public OrderTab(Application app) {
         

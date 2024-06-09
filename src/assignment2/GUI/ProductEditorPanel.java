@@ -4,6 +4,7 @@
  */
 package assignment2.GUI;
 
+import assignment2.Application;
 import assignment2.Product;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,15 +40,16 @@ public class ProductEditorPanel extends JPanel {
     private JButton discardButton;
     
     private JLabel panelHeader = new JLabel("Creating a new product");
-
-    private MainWindow gui;
+    
     private ProductTab productTab;
+    
+    private Application app;
     
     public int indexUpdating = -1;
     private Product product; //the product being edited
     
-    public ProductEditorPanel(MainWindow gui, ProductTab productTab) {
-        this.gui = gui;
+    public ProductEditorPanel(Application app, ProductTab productTab) {
+        this.app = app;
         this.productTab = productTab;
 
         setLayout(new GridBagLayout());
@@ -175,13 +177,8 @@ public class ProductEditorPanel extends JPanel {
 
         //Create button
         createButton = new JButton("Create");
-        createButton.addActionListener(e -> {
-                Product newOrChangedProduct = createProduct();
-            if (this.indexUpdating > -1) {
-                gui.app.updateProduct(this.indexUpdating,newOrChangedProduct );                    
-            } else {         
-                gui.app.createProduct(newOrChangedProduct);      
-            }             
+        createButton.addActionListener(e -> {   
+            createOrUpdate();
         });
 
         //Create button
@@ -217,11 +214,20 @@ public class ProductEditorPanel extends JPanel {
 
         return new Product(id, title, desc, cat, price, quant);
     }
+    
+    public void createOrUpdate() {
+            Product newOrChangedProduct = createProduct();
+        if (this.indexUpdating > -1) {
+            app.updateProduct(this.indexUpdating,newOrChangedProduct );                    
+        } else {         
+            app.createProduct(newOrChangedProduct);      
+        }   
+    }
 
     //load product for editing
     public void loadProduct(int rowIndex, int productId) {
         this.indexUpdating = rowIndex; // Pass the row index of the product being updated, so if it is updated we can just adjust one product rather than querying the DB again
-        this.product = gui.app.getProductById(productId);
+        this.product = app.getProductById(productId);
         
         System.out.println(this.product);
 

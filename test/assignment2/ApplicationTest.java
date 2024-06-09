@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.List;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -18,15 +19,21 @@ import org.junit.Test;
  */
 public class ApplicationTest {
     
-
-    @Test
-    public void testAddEditAndDeleteProduct() {
-        
-        Database db = new Database();        
-        Application app = new Application(db);       
+    Database db;
+    Application app;
+    
+    @Before
+    public void init() {        
+        db = new Database();        
+        app = new Application(db);       
         
         MainWindow gui = new MainWindow(app);
         app.gui = gui;
+    }
+    
+
+    @Test
+    public void createAddEditAndDeleteProduct() {
         
         // Create a new product to test
         Product testProduct = new Product(-1, "TEST PRODUCT", "Test description", "Category 5", new BigDecimal(10.00), 122);
@@ -55,8 +62,6 @@ public class ApplicationTest {
         Assert.assertEquals(retrievedProduct.getTitle(), newTitle);        
         Assert.assertEquals(retrievedProduct.getCategory(), newCategory);
         
-        int retreievedId = retrievedProduct.getId();
-        
         // Try to delete the product we just created, fail if method returns 0
         // 0 means zero rows were updated (and thus no product was deleted
         if (app.deleteProductById(retrievedProduct.getId()) == 0) {
@@ -64,35 +69,74 @@ public class ApplicationTest {
         }
     }
     
+    @Test
+    public void deleteNonExistentProductById() {
+        int returnedValue = app.deleteProductById(999999);
+        Assert.assertEquals(0, returnedValue);
+    }
+    
 
     @Test(expected = IllegalArgumentException.class)
     public void createOrderWithNoProducts() {
         
-        Database db = new Database();        
-        Application app = new Application(db);       
-        
-        MainWindow gui = new MainWindow(app);
-        app.gui = gui;
-        
         // Create a new order to test
         Order testOrder = new Order("PRODUCT WITH NO ORDERS", "", null, "123 fake street", Order.OrderStatus.DRAFT, new BigDecimal(0.00));
         
-        System.out.println("Test order");
         //  Try to create our productless order
         app.createOrder(testOrder);
     }
     
-
     @Test
-    public void createEditDeleteOrder() {
-        
-        Database db = new Database();        
-        Application app = new Application(db);     
+    public void deleteNonExistentOrderById() {
+        int returnedValue = app.deleteOrderById(999999);
+        Assert.assertEquals(0, returnedValue);
+    }
+    
+    @Test
+    public void editorOrderProducts() {
         
         app.setProducts(app.resultSetToProducts(db.getProducts())); 
         
-        MainWindow gui = new MainWindow(app);
-        app.gui = gui;
+        // Grab the first second and third products
+        Product firstProduct = app.getProducts().get(0);
+        Product secondProduct = app.getProducts().get(1);
+        Product thirdProduct = app.getProducts().get(2);
+        
+        Product[] prods = {firstProduct, secondProduct};
+        
+        Order testOrder = new Order("TEST EDITING ORDER PRODUCTS", "", prods, "123 fake street", Order.OrderStatus.DRAFT, new BigDecimal(0.00));
+        
+        //  Create our order and grab its id
+        int orderId = app.createOrder(testOrder);
+        
+        // Now lets change our line items
+        Product[] productsToSet = {secondProduct, thirdProduct};
+        
+        //Set the id for our id-less order and change the line items to our new products
+        testOrder.setId(orderId);
+        testOrder.setLineItems(productsToSet);
+        
+        //update the database
+        app.updateOrder(testOrder);
+        
+        //Grab the products from our order
+        Product[] updatedProducts = app.loadProductsFromOrder(orderId).values().toArray(new Product[0]);
+        
+        //Because the products get pushed into the database they need to be checked in reverse order
+        Assert.assertEquals(updatedProducts[0].getTitle(),productsToSet[1].getTitle());         
+        Assert.assertEquals(updatedProducts[0].getTitle(),productsToSet[1].getTitle());  
+        
+        //Clean up our test products
+        db.deleteProductsFromOrder(orderId, updatedProducts);
+        
+        //Delete our test order
+        app.deleteOrderById(orderId);    
+    }
+    
+    @Test
+    public void createEditDeleteOrder() {   
+        
+        app.setProducts(app.resultSetToProducts(db.getProducts())); 
         
         //for the test order let's just use the first product in the database
         Product firstProduct = app.getProducts().get(0);
