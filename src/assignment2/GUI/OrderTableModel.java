@@ -30,9 +30,10 @@ public class OrderTableModel extends AbstractTableModel {
 
     public OrderTableModel(OrderEditorPanel orderEditorPanel,List<Order> orders) {
         this.orders = orders;
+        this.orderEditorPanel = orderEditorPanel;
 
-
-        JTable table = new JTable(this);           
+        JTable table = new JTable(this); 
+        addTableMouseListener(table);          
         JScrollPane scrollPane = new JScrollPane(table);
         
         this.tablePanel = new JPanel(new BorderLayout());
@@ -84,10 +85,11 @@ public class OrderTableModel extends AbstractTableModel {
                 int rowIndex = table.rowAtPoint(e.getPoint());
                 if (e.getClickCount() == 2) { // Double click
                     if (rowIndex >= 0) {
-                        
-                        //System.out.println("Adding product:" + products.get(rowIndex).getId());
-                        
-                        //orderEditorPanel.addProduct(products.get(rowIndex));
+                        System.out.println("Double clicked");
+                        System.out.println(orders);
+                        System.out.println(rowIndex);
+                        System.out.println(orders.get(rowIndex));
+                        orderEditorPanel.loadOrder(rowIndex, orders.get(rowIndex));
                     }
                 }
             }

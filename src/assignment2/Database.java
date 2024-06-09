@@ -140,11 +140,6 @@ public class Database {
          }
     }
 
-    // Example methods for querying specific tables
-    public ResultSet getCustomers() {
-        return executeQuery("SELECT * FROM customers");
-    }
-
     public ResultSet getOrders() {
         return executeQuery("SELECT * FROM orders");
     }

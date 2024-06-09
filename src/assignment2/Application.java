@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -179,14 +180,66 @@ public class Application {
         this.gui.orderTab.orderTable.fireTableDataChanged();        
     }
     
-    public Product[] loadProductsFromOrder(int orderId) {
+    
+    public void updateOrder(Order updatedOrder) {
+        int orderId = updatedOrder.getId();
+        
+        System.out.println(orderId);
+
+        String query = "UPDATE ORDERS SET " +
+            "CUSTOMER_FNAME = '" + updatedOrder.getCustomerFName() + "', " +
+            "CUSTOMER_LNAME = '" + updatedOrder.getCustomerLName() + "', " +
+            "STATUS = '" + updatedOrder.getStatus() + "', " +
+            "SHIPPING_ADDRESS = '" + updatedOrder.getShippingAddress() + "', " +
+            "TOTAL_PRICE = " + updatedOrder.getTotalPrice() + " " +
+            "WHERE ID = " + orderId;
+
+        this.db.executeUpdate(query);
+
+        String deleteOrderItemsQuery = "DELETE FROM ORDER_ITEMS WHERE ORDER_ID = " + orderId;
+        this.db.executeUpdate(deleteOrderItemsQuery);
+
+        String orderItemsQuery = "INSERT INTO ORDER_ITEMS (ORDER_ID, PRODUCT_ID, QUANTITY)\n VALUES ";
+        Product[] lineItems = updatedOrder.getLineItems();
+        for (int i = 0; i < lineItems.length; i++) {
+            Product lineItem = lineItems[i];
+            System.out.println(lineItem);
+            orderItemsQuery += "(" + orderId + "," +
+                lineItem.getId() + ", " +
+                lineItem.getQuantity() + ")";
+            if (i < lineItems.length - 1) {
+                orderItemsQuery += ", ";
+            }
+        }
+        this.db.executeUpdate(orderItemsQuery);
+
+        // Update the order in the orders list
+        for (int i = 0; i < orders.size(); i++) {
+            if (orders.get(i).getId() == orderId) {
+                orders.set(i, updatedOrder);
+                break;
+            }
+        }
+        this.gui.orderTab.orderTable.fireTableDataChanged();
+    }
+    
+    public HashMap<Integer,Product> loadProductsFromOrder(int orderId) {
         List<Product> orderItems = new ArrayList<>();
 
         String query = "SELECT p.* FROM PRODUCTS p " +
-                             "JOIN ORDER_ITEMS oi ON p.PRODUCT_ID = oi.PRODUCT_ID " +
-                             "WHERE oi.ORDER_ID = ?";
+                       "JOIN ORDER_ITEMS oi ON p.ID = oi.PRODUCT_ID " +
+                       "WHERE oi.ORDER_ID = " + orderId;
         
-        return resultSetToProducts(this.db.executeQuery(query)).toArray(Product[]::new);
+        
+        orderItems = resultSetToProducts(this.db.executeQuery(query));
+        HashMap<Integer,Product> products = new HashMap<>();
+        
+        for (Product p : orderItems) {
+            products.put(p.getId(), p);
+            // Do something with each product
+        }
+        
+        return products;
     }
     
     public Product getProductById(int id) {
@@ -205,6 +258,7 @@ public class Application {
     }
 
     public List<Order> getOrders() {
+        System.out.println(orders);
         return orders;
     }
     

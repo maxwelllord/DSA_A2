@@ -34,14 +34,19 @@ import javax.swing.SwingConstants;
  */
 public class OrderEditorPanel extends JPanel  {
     //Fields that need to be read to create an order
+    
+    private JLabel editorHeader = new JLabel("Creating a new order");
+    private JButton createButton;
+    
     private JTextField firstName;    
     private JTextField lastName;
     private JTextField orderShippingAddress;
     private JComboBox orderStatus;
-    JLabel totalPriceValue;
-
-    JTextField productSearchField;       
-    JPanel itemListPanel; 
+    
+    private JLabel totalPriceValue;
+    
+    private JTextField productSearchField;       
+    private JPanel itemListPanel; 
     
     private List<Product> searchedProducts = new ArrayList<>(); //products display to the user to be picked for the order
     public HashMap<Integer, Product> orderProducts = new HashMap<>(); //products in the order
@@ -51,7 +56,8 @@ public class OrderEditorPanel extends JPanel  {
     private Application app;
     private OrderTab orderTab;
     
-    private boolean isEditing = false;
+    public int indexUpdating = -1;
+    private Order order; //the order being updated, if one is present
 
     public OrderEditorPanel(Application app, OrderTab orderTab) {
         this.app = app;
@@ -63,14 +69,20 @@ public class OrderEditorPanel extends JPanel  {
         int yPos = 0;
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        
+        gbc.gridx = 0;
+        gbc.gridy = yPos;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 5);        
+        add(editorHeader);
+        
+        yPos++;
 
         // Order Status Label
         JLabel firstnameLabel = new JLabel("First Name:");
         gbc.gridx = 0;
         gbc.gridy = yPos;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 5);
         add(firstnameLabel, gbc);
 
         // Order Shipping Address Text Field
@@ -226,9 +238,13 @@ public class OrderEditorPanel extends JPanel  {
         yPos++;
 
         //Create button
-        JButton createButton = new JButton("Create");
+        this.createButton = new JButton("Create");
         createButton.addActionListener(e -> {
-            app.createOrder(createOrder());                
+            if (this.indexUpdating > -1) {
+                app.updateOrder(createOrder());
+            } else {
+                app.createOrder(createOrder());                    
+            }            
         });
         
         gbc.gridx = 0;
@@ -247,8 +263,6 @@ public class OrderEditorPanel extends JPanel  {
         gbc.gridx = 1;
         gbc.gridy = yPos;
         add(discardButton, gbc);
-        
-        yPos++;
     }
     
     private Order createOrder() {
@@ -265,7 +279,7 @@ public class OrderEditorPanel extends JPanel  {
             totalPrice = totalPrice.add(p.getPrice());
         }
         
-        return new Order(
+        Order o = new Order(
             this.firstName.getText(),
             this.lastName.getText(),
             prods,
@@ -273,9 +287,21 @@ public class OrderEditorPanel extends JPanel  {
             (Order.OrderStatus) this.orderStatus.getSelectedItem(),
             totalPrice
         );
+        
+        if (this.indexUpdating > -1) {
+            o.setId(order.getId());
+        }
+        
+        return o;
     }
     
-    private void loadOrder(Order order) {
+    public void loadOrder(int rowIndex, Order order) {
+        this.indexUpdating = rowIndex;
+        this.order = order;
+        
+        editorHeader.setText("Editing Order No." + order.getId());
+        this.createButton.setText("Save Changes");
+        
         firstName.setText(order.getCustomerFName());    
         lastName.setText(order.getCustomerLName());    
         orderShippingAddress.setText(order.getShippingAddress());
@@ -284,10 +310,27 @@ public class OrderEditorPanel extends JPanel  {
         totalPriceValue.setText(order.getTotalPrice().toString());
         
         //Load the products
+        orderProducts = app.loadProductsFromOrder(order.getId());
+        renderLineItems();
     }
     
     private void resetFields() {
+        this.indexUpdating = -1;
+        this.order = null;
         
+        editorHeader.setText("Creating a new order");
+        this.createButton.setText("Create");
+        
+        firstName.setText("");    
+        lastName.setText("");    
+        orderShippingAddress.setText("");
+        
+        orderStatus.setSelectedItem("");
+        totalPriceValue.setText("");
+        
+        //Reset products
+        orderProducts = new HashMap<>();
+        renderLineItems();
     }
     
     public void removeProduct(int productId) {
@@ -300,31 +343,31 @@ public class OrderEditorPanel extends JPanel  {
     public void addProduct(Product newProduct) {
         orderProducts.put(newProduct.getId(),new Product(newProduct));
         
-        itemListPanel.removeAll();
-        itemListPanel.revalidate();
-        
-        if (this.orderProducts.isEmpty()) {
-            JLabel noProductsLabel = new JLabel("No products");
-            itemListPanel.add(noProductsLabel);
-        } else {  
-            renderLineItems();
-        }
-        
-        System.out.println("Products in order products");
-        System.out.println(orderProducts);
-        itemListPanel.repaint();   
+        renderLineItems();
     }
     
     public void renderLineItems() {
         this.itemListPanel.removeAll();
+        
+        if (this.orderProducts.isEmpty()) {
+            System.out.println("Order products is empty");
+            JLabel noProductsLabel = new JLabel("No products");
+            this.itemListPanel.add(noProductsLabel);
+            return;
+        } 
+        
         BigDecimal totalPrice = new BigDecimal(0);
+        
         for (Product p : this.orderProducts.values()) {
-            System.out.println(p.getPrice());
             totalPrice = totalPrice.add(p.getPrice());
             OrderProductItem item = new OrderProductItem(this, p);
-            this.itemListPanel.add(item);
+            itemListPanel.add(item);
         }
-        totalPriceValue.setText("$ " + totalPrice);
+        
+        this.totalPriceValue.setText("$ " + totalPrice);
+        
+        itemListPanel.revalidate();
+        itemListPanel.repaint();
         
     }
 }
