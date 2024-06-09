@@ -74,6 +74,8 @@ public class Application {
         return temp;
     }
     
+    
+    //Pack lines from resultsets into product objects
     public Product rsToProduct(ResultSet rs) {
         
         try {
@@ -93,6 +95,7 @@ public class Application {
         return null;
     }
     
+    //Pack lines from resultsets into order objects
     public Order rsToOrder(ResultSet rs) {
         
         try {
@@ -112,6 +115,7 @@ public class Application {
         return null;        
     }
     
+    // Enter a passed product object into the DB and pass back the generated ID from the database
     public void createProduct(Product newProduct) {
         System.out.println("Creating " + newProduct);
         
@@ -189,14 +193,14 @@ public class Application {
         }
 
         this.db.executeUpdate(orderItemsQuery);
-        
+        newOrder.setId(orderId);
         orders.add(newOrder); //add the order to the order table
         this.gui.orderTab.orderTable.fireTableDataChanged();
 
         return orderId;
     }
     
-    
+    // Update an order in the database
     public void updateOrder(Order updatedOrder) {
         int orderId = updatedOrder.getId();
         
@@ -241,6 +245,7 @@ public class Application {
     }
     
     public HashMap<Integer,Product> loadProductsFromOrder(int orderId) {
+        System.out.println("Loading " + orderId);
         String query = "SELECT p.* FROM PRODUCTS p " +
                        "JOIN ORDER_ITEMS oi ON p.ID = oi.PRODUCT_ID " +
                        "WHERE oi.ORDER_ID = " + orderId;
@@ -252,6 +257,8 @@ public class Application {
         for (Product p : orderItems) {
             prods.put(p.getId(), p);
         }
+        
+        System.out.println(prods);
         
         return prods;
     }

@@ -7,6 +7,7 @@ package assignment2.GUI;
 import assignment2.Application;
 import assignment2.Order;
 import assignment2.Product;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -37,6 +38,7 @@ public class OrderEditorPanel extends JPanel  {
     
     private JLabel editorHeader = new JLabel("Creating a new order");
     private JButton createButton;
+    private JLabel warningMessage = new JLabel("");
     
     private JTextField firstName;    
     private JTextField lastName;
@@ -230,10 +232,18 @@ public class OrderEditorPanel extends JPanel  {
         //Create button
         this.createButton = new JButton("Create");
         createButton.addActionListener(e -> {
-            if (this.indexUpdating > -1) {
-                app.updateOrder(createOrder());
+            Order ord = createOrder();
+            if (ord == null) {
+                warningMessage.setText("Order must contain at least one item");
+                return;
             } else {
-                app.createOrder(createOrder());                    
+                warningMessage.setText("");                
+            }
+            
+            if (this.indexUpdating > -1) {
+                app.updateOrder(ord);
+            } else {
+                app.createOrder(ord);                    
             }            
         });
         
@@ -253,6 +263,13 @@ public class OrderEditorPanel extends JPanel  {
         gbc.gridx = 1;
         gbc.gridy = yPos;
         add(discardButton, gbc);
+        
+        yPos++;
+        
+        gbc.gridx = 0;
+        gbc.gridy = yPos;
+        warningMessage.setForeground(Color.red);
+        add(warningMessage, gbc);
         
         updateSearchedProducts();
     }
