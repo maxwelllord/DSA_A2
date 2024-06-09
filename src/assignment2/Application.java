@@ -120,7 +120,9 @@ public class Application {
             newProduct.getCategory() + "', " + newProduct.getPrice() + ", " +
             newProduct.getQuantity() + ")";
         
-        this.db.executeUpdate(query);
+        int productId = this.db.executeUpdateWithGeneratedKey(query);
+        
+        newProduct.setId(productId);
         
         products.add(newProduct);
         this.gui.productTab.productTable.updateTable(products);

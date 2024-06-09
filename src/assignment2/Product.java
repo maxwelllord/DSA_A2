@@ -29,6 +29,10 @@ public class Product {
         this.price = price;
         this.quantity = quantity;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     
     // For creating a product to add to an order
     public Product(Product other) {

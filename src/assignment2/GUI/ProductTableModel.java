@@ -8,6 +8,7 @@ import assignment2.Product;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -83,7 +84,7 @@ public class ProductTableModel extends AbstractTableModel {
             case 1:
                 return product.getQuantity();
             case 2:
-                return "$ " + product.getPrice();
+                return "$ " + product.getPrice().setScale(2, RoundingMode.UNNECESSARY).toString();
             case 3:
                 return product.getId();
             default:

@@ -341,14 +341,15 @@ public class OrderEditorPanel extends JPanel  {
     }
     
     public void addProduct(Product newProduct) {
-        orderProducts.put(newProduct.getId(),new Product(newProduct));
-        
+        orderProducts.put(newProduct.getId(),new Product(newProduct));        
         renderLineItems();
     }
     
     public void renderLineItems() {
+        //Remove all children from the panel
         this.itemListPanel.removeAll();
         
+        // If there are no products, show a message saying there are no products
         if (this.orderProducts.isEmpty()) {
             System.out.println("Order products is empty");
             JLabel noProductsLabel = new JLabel("No products");
@@ -356,14 +357,17 @@ public class OrderEditorPanel extends JPanel  {
             return;
         } 
         
+        
         BigDecimal totalPrice = new BigDecimal(0);
         
+        //Create nwe panels for our products, and sum our price at the same time
         for (Product p : this.orderProducts.values()) {
             totalPrice = totalPrice.add(p.getPrice());
             OrderProductItem item = new OrderProductItem(this, p);
             itemListPanel.add(item);
         }
         
+        //Set the total price, revalidate and paint
         this.totalPriceValue.setText("$ " + totalPrice);
         
         itemListPanel.revalidate();
