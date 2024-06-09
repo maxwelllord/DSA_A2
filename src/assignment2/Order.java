@@ -28,7 +28,7 @@ public class Order {
     
     public enum OrderStatus {
         DRAFT("Draft"),
-        PROCESSING("Paid"),
+        PAID("Paid"),
         SHIPPED("Shipped"),
         CANCELLED("Cancelled");
 

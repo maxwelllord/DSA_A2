@@ -12,7 +12,6 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -108,7 +107,6 @@ public class ProductTableModel extends AbstractTableModel {
                     singleClickTimer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            // Execute single click functionality
                             productTab.productDisplayPanel.setProductInfo(products.get(rowIndex));
                             productTab.productDisplayPanel.setVisible(true);
                             productTab.productEditorPanel.setVisible(false);
@@ -119,8 +117,6 @@ public class ProductTableModel extends AbstractTableModel {
                         singleClickTimer.cancel();
                     }
                     if (rowIndex >= 0) {
-                        // Handle double click event on the row
-                        // Perform desired action with the double-clicked product
                         System.out.println("Attempting to load product Id:" + products.get(rowIndex).getId());
                         productTab.productEditorPanel.loadProduct(rowIndex, products.get(rowIndex).getId());
                         productTab.productEditorPanel.setVisible(true);

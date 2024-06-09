@@ -5,12 +5,10 @@
 package assignment2.GUI;
 
 import assignment2.Order;
-import assignment2.Product;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;

@@ -5,7 +5,6 @@
 package assignment2.GUI;
 
 import assignment2.Application;
-import java.awt.Dimension;
 import javax.swing.JPanel;
 
 /**
