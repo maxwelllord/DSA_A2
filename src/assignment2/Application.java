@@ -150,6 +150,12 @@ public class Application {
     }
     
     public int createOrder(Order newOrder) {
+
+        Product[] lineItems = newOrder.getLineItems();
+        
+        if (lineItems == null) {
+            throw new IllegalArgumentException("Line items cannot be null");
+        }
         
         String query = "INSERT INTO ORDERS (CUSTOMER_FNAME, CUSTOMER_LNAME, STATUS, SHIPPING_ADDRESS, TOTAL_PRICE)\n" +
             "VALUES ('" +
@@ -164,12 +170,6 @@ public class Application {
         System.out.println("ID:" + orderId);
         
         String orderItemsQuery = "INSERT INTO ORDER_ITEMS (ORDER_ID, PRODUCT_ID, QUANTITY)\n VALUES ";
-
-        Product[] lineItems = newOrder.getLineItems();
-        
-        if (lineItems == null) {
-            throw new IllegalArgumentException("Line items cannot be null");
-        }
         
         for (int i = 0; i < lineItems.length; i++) {
             Product lineItem = lineItems[i];
@@ -265,6 +265,18 @@ public class Application {
         
         return null;
     }
+    
+    public List<Product> getProductsByTitle(String titleSubstring) {
+        return resultSetToProducts(db.getProductByTitleSubstring(titleSubstring));
+    }
+    
+    public Order getOrderById(int orderId) {
+        return resultSetToOrders(db.getOrderById(orderId)).get(0);
+    }
+    
+    public int deleteOrderById(int orderId) {
+        return db.deleteOrdertById(orderId);
+    }
 
     public List<Order> getOrders() {
         return orders;
@@ -280,17 +292,5 @@ public class Application {
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
-    }
-    
-    public List<Product> getProductsByTitle(String titleSubstring) {
-        return resultSetToProducts(db.getProductByTitleSubstring(titleSubstring));
-    }
-    
-    public Order getOrderById(int orderId) {
-        return resultSetToOrders(db.getOrderById(orderId)).get(0);
-    }
-    
-    public int deleteOrderById(int orderId) {
-        return db.deleteOrdertById(orderId);
     }
 }

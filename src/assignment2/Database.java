@@ -9,7 +9,6 @@ package assignment2;
  * @author hayae
  */
 import java.sql.*;
-import java.util.List;
 
 
 public class Database {
@@ -185,7 +184,6 @@ public class Database {
             int rowsAffected = statement.executeUpdate();
             return rowsAffected;
         } catch (Exception e) {
-           System.out.println("deleteOrdertById error");
             e.printStackTrace();
             return -1;
         }
@@ -220,7 +218,6 @@ public class Database {
            int rowsAffected = statement.executeUpdate();
            return rowsAffected > 0;
        } catch (SQLException e) {
-           System.out.println("deleteProductsFromOrder error");
            e.printStackTrace();
            return false;
        }

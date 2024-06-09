@@ -75,14 +75,11 @@ public class ApplicationTest {
         app.gui = gui;
         
         // Create a new order to test
-        Order testOrder = new Order("TESTCUSTOMER FNAME", "TESTCUSTOMER LNAME", null, "123 fake street", Order.OrderStatus.DRAFT, new BigDecimal(0.00));
+        Order testOrder = new Order("PRODUCT WITH NO ORDERS", "", null, "123 fake street", Order.OrderStatus.DRAFT, new BigDecimal(0.00));
         
+        System.out.println("Test order");
         //  Try to create our productless order
         app.createOrder(testOrder);
-        // Retrieve it via its title substring
-        //Order retrievedOrder = app.getOrderById(testOrderId);
-        
-        //System.out.println(retrievedOrder);
     }
     
 
@@ -102,16 +99,12 @@ public class ApplicationTest {
         
         Product[] prods = {firstProduct};
         
+        // Some initial data to test later
         String cFName = "TESTCUSTOMER FNAME";
         Order.OrderStatus status = Order.OrderStatus.DRAFT;
         
-        System.out.println("Prods");
-        System.out.println(prods);
-        
         // Create a new order to test
         Order testOrder = new Order(cFName, "TESTCUSTOMER LNAME", prods, "123 fake street", status, new BigDecimal(0.00));
-        
-        System.out.println(testOrder.getLineItems()[0]);
         
         //  Create our order and grab its id
         int orderId = app.createOrder(testOrder);
@@ -119,12 +112,15 @@ public class ApplicationTest {
         // Retrieve it via its title substring
         Order retrievedOrder = app.getOrderById(orderId);
         
+        //Check some of our data is the same
         Assert.assertEquals(retrievedOrder.getCustomerFName(), cFName);        
         Assert.assertEquals(retrievedOrder.getStatus(), status);
         
+        //Define some new vars to update
         String newCFName = "NEW FNAME";
         Order.OrderStatus newStatus = Order.OrderStatus.CANCELLED;
         
+        //Set the vars
         retrievedOrder.setCustomerFName(newCFName);
         retrievedOrder.setStatus(newStatus);
         
