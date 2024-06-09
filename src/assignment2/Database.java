@@ -9,26 +9,18 @@ package assignment2;
  * @author hayae
  */
 import java.sql.*;
+import java.util.List;
 
 
 public class Database {
-    private static final String dbName = "inventoryDB";
-    private static final String connectionUrl = "jdbc:derby:" + dbName + ";";
+    private static final String DB_NAME = "inventoryDB";
+    private static final String CONNECTION_URL = "jdbc:derby:" + DB_NAME + ";";
     
     private Connection connection;
-    
-    public static void main(String[] args) {
-        Database db = new Database();
-        Application app = new Application(db);
-        
-        ResultSet products = db.getProducts();
-        app.resultSetToProducts(products);
-        app.printProducts();
-    }
 
     public Database() {
         try {
-            connection = DriverManager.getConnection(connectionUrl);
+            connection = DriverManager.getConnection(CONNECTION_URL);
             
             //createTables();
         } catch (SQLException e) {
@@ -83,7 +75,7 @@ public class Database {
     
     public int executeUpdateWithGeneratedKey(String query) {
         int generatedKey = -1;
-    ResultSet resultSet = null;
+        ResultSet resultSet;
 
 
         try {
@@ -98,7 +90,6 @@ public class Database {
                 }
             }
         } catch (SQLException e) {
-            // Handle the exception appropriately (e.g., log the error, throw a custom exception)
             e.printStackTrace();
         }
 
@@ -125,6 +116,18 @@ public class Database {
         return -1;
     }
     
+    // PRODUCT METHODS
+
+    public ResultSet getProducts() {
+        return executeQuery("SELECT * FROM products");
+    }   
+    
+    public ResultSet getProductByTitleSubstring(String titleSubstring) {
+        String query = "SELECT * FROM products WHERE name LIKE '%" + titleSubstring + "%'";
+        System.out.println(query);
+        return executeQuery(query);
+    }
+    
     public ResultSet getProductById(int id) {
         
          try {
@@ -139,18 +142,87 @@ public class Database {
              return null;
          }
     }
+    
+    public int deleteProductById(int id) {
+        try {
+            String query = "DELETE FROM products WHERE id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    
+    // ORDER METHODS
 
     public ResultSet getOrders() {
         return executeQuery("SELECT * FROM orders");
     }
-
-    public ResultSet getProducts() {
-        return executeQuery("SELECT * FROM products");
-    }   
     
-    public ResultSet getProductByTitleSubstring(String titleSubstring) {
-        String query = "SELECT * FROM products WHERE name LIKE '%" + titleSubstring + "%'";
-        System.out.println(query);
-        return executeQuery(query);
+    public ResultSet getOrderById(int id) {
+        
+         try {
+            String query = "SELECT * FROM orders WHERE id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet;
+             
+         } catch (Exception e) {
+             e.printStackTrace();
+             return null;
+         }
+    }
+    
+    public int deleteOrdertById(int id) {
+        try {
+            String query = "DELETE FROM orders WHERE id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected;
+        } catch (Exception e) {
+           System.out.println("deleteOrdertById error");
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    
+    public boolean deleteProductsFromOrder(int orderId, Product[] products) {
+       if (products == null || products.length == 0) {
+           System.out.println("No products to delete from order");
+           return false;
+       }
+
+       try {
+           StringBuilder deleteQuery = new StringBuilder();
+           deleteQuery.append("DELETE FROM ORDER_ITEMS WHERE ORDER_ID = ? AND PRODUCT_ID IN (");
+
+           for (int i = 0; i < products.length; i++) {
+               deleteQuery.append("?");
+               if (i < products.length - 1) {
+                   deleteQuery.append(", ");
+               }
+           }
+
+           deleteQuery.append(")");
+
+           PreparedStatement statement = connection.prepareStatement(deleteQuery.toString());
+           statement.setInt(1, orderId);
+
+           for (int i = 0; i < products.length; i++) {
+               statement.setInt(i + 2, products[i].getId());
+           }
+
+           int rowsAffected = statement.executeUpdate();
+           return rowsAffected > 0;
+       } catch (SQLException e) {
+           System.out.println("deleteProductsFromOrder error");
+           e.printStackTrace();
+           return false;
+       }
     }
 }

@@ -23,7 +23,7 @@ public class ProductTab extends JPanel {
 
     public ProductTab(Application app, MainWindow gui) {
         
-        this.productTable = new ProductTableModel(app.products, gui, this);
+        this.productTable = new ProductTableModel(app.getProducts(), gui, this);
         this.tablePanel = productTable.getTablePanel();
         
         this.productDisplayPanel = new ProductDisplayPanel(this);

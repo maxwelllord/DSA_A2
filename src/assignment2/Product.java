@@ -21,22 +21,13 @@ public class Product {
     private BigDecimal price;
     private int quantity;
     
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    
     public Product(int id, String title, String description, String category, BigDecimal price, int quantity) {
-        this(id, title, description, category, price, quantity, null, null);
-    }
-    
-    public Product(int id, String title, String description, String category, BigDecimal price, int quantity, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.category = category;
         this.price = price;
         this.quantity = quantity;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
     
     // For creating a product to add to an order
@@ -47,8 +38,6 @@ public class Product {
         this.category = other.category;
         this.price = other.price;
         this.quantity = 1;
-        this.createdAt = other.createdAt;
-        this.updatedAt = other.updatedAt;
     }
 
     public String getTitle() {
@@ -61,22 +50,6 @@ public class Product {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getDescription() {

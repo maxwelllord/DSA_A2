@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class Application {
     
-    public List<Product> products = new ArrayList<>();    
+    private List<Product> products = new ArrayList<>();    
     private List<Order> orders = new ArrayList<>();
     
     Database db;
@@ -32,8 +32,8 @@ public class Application {
         
         Application app = new Application(db);       
         
-        app.products = app.resultSetToProducts(db.getProducts());
-        app.orders = app.resultSetToOrders(db.getOrders());
+        app.setProducts(app.resultSetToProducts(db.getProducts()));
+        app.setOrders(app.resultSetToOrders(db.getOrders()));
         
         MainWindow gui = new MainWindow(app);
         app.gui = gui;
@@ -42,11 +42,9 @@ public class Application {
 
     public Application(Database db) {
         this.db = db;
-        
-        //query the db to populate the arraylists
     }
     
-    //unpack the result of a query into a Product object
+    // Unpack the ResultSet of a query into a list of products
     public List<Product> resultSetToProducts(ResultSet rs) {
         List<Product> temp = new ArrayList<>();  
         try {
@@ -61,7 +59,7 @@ public class Application {
         return temp;
     }
     
-    // Unpack RS into Orders
+    // Unpack ResultSet into a list of Orders
     public List<Order> resultSetToOrders(ResultSet rs) {
         List<Order> temp = new ArrayList<>();  
         try {
@@ -88,7 +86,7 @@ public class Application {
             int quant = rs.getInt("quantity");
 
             return new Product(id, name, desc, cat, price, quant);     
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }   
         
@@ -145,7 +143,13 @@ public class Application {
         this.gui.productTab.productTable.updateTable(products);
     }
     
-    public void createOrder(Order newOrder) {
+    public int deleteProductById(int productId) {
+        System.out.println("Deleting the product with ID: " + productId);
+
+        return db.deleteProductById(productId);
+    }
+    
+    public int createOrder(Order newOrder) {
         
         String query = "INSERT INTO ORDERS (CUSTOMER_FNAME, CUSTOMER_LNAME, STATUS, SHIPPING_ADDRESS, TOTAL_PRICE)\n" +
             "VALUES ('" +
@@ -162,6 +166,11 @@ public class Application {
         String orderItemsQuery = "INSERT INTO ORDER_ITEMS (ORDER_ID, PRODUCT_ID, QUANTITY)\n VALUES ";
 
         Product[] lineItems = newOrder.getLineItems();
+        
+        if (lineItems == null) {
+            throw new IllegalArgumentException("Line items cannot be null");
+        }
+        
         for (int i = 0; i < lineItems.length; i++) {
             Product lineItem = lineItems[i];
             System.out.println(lineItem);
@@ -177,7 +186,9 @@ public class Application {
         this.db.executeUpdate(orderItemsQuery);
         
         orders.add(newOrder); //add the order to the order table
-        this.gui.orderTab.orderTable.fireTableDataChanged();        
+        this.gui.orderTab.orderTable.fireTableDataChanged();
+
+        return orderId;
     }
     
     
@@ -201,6 +212,7 @@ public class Application {
 
         String orderItemsQuery = "INSERT INTO ORDER_ITEMS (ORDER_ID, PRODUCT_ID, QUANTITY)\n VALUES ";
         Product[] lineItems = updatedOrder.getLineItems();
+        
         for (int i = 0; i < lineItems.length; i++) {
             Product lineItem = lineItems[i];
             System.out.println(lineItem);
@@ -224,22 +236,19 @@ public class Application {
     }
     
     public HashMap<Integer,Product> loadProductsFromOrder(int orderId) {
-        List<Product> orderItems = new ArrayList<>();
-
         String query = "SELECT p.* FROM PRODUCTS p " +
                        "JOIN ORDER_ITEMS oi ON p.ID = oi.PRODUCT_ID " +
                        "WHERE oi.ORDER_ID = " + orderId;
         
         
-        orderItems = resultSetToProducts(this.db.executeQuery(query));
-        HashMap<Integer,Product> products = new HashMap<>();
+        List<Product> orderItems = resultSetToProducts(this.db.executeQuery(query));
+        HashMap<Integer,Product> prods = new HashMap<>();
         
         for (Product p : orderItems) {
-            products.put(p.getId(), p);
-            // Do something with each product
+            prods.put(p.getId(), p);
         }
         
-        return products;
+        return prods;
     }
     
     public Product getProductById(int id) {
@@ -258,17 +267,30 @@ public class Application {
     }
 
     public List<Order> getOrders() {
-        System.out.println(orders);
         return orders;
     }
-    
-    public void printProducts() {
-        for (Product p : products) {
-            System.out.println(p);
-        }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
     
     public List<Product> getProductsByTitle(String titleSubstring) {
         return resultSetToProducts(db.getProductByTitleSubstring(titleSubstring));
+    }
+    
+    public Order getOrderById(int orderId) {
+        return resultSetToOrders(db.getOrderById(orderId)).get(0);
+    }
+    
+    public int deleteOrderById(int orderId) {
+        return db.deleteOrdertById(orderId);
     }
 }
